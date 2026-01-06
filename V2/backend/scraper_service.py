@@ -39,18 +39,22 @@ class ScraperService:
             
             soup = BeautifulSoup(response.text, "html.parser")
             
-            # Specialized extraction for Indian Kanoon
-            # Usually legal text is in divs with classes 'judgments' or 'doc_content'
-            content_div = soup.find("div", class_="judgments") or soup.find("div", class_="doc_content")
+            # Specialized extraction based on Domain
+            if "indiankanoon.org" in url:
+                content_div = soup.find("div", class_="judgments") or soup.find("div", class_="doc_content")
+            elif "indiacode.nic.in" in url:
+                # Indiacode often uses act_content or similar divs
+                content_div = soup.find("div", class_="act_content") or soup.find("div", id="act_content") or soup.find("div", class_="container")
+            else:
+                content_div = soup.find("article") or soup.find("main") or soup.find("body")
             
             if content_div:
-                # Remove unwanted elements like ads, sidebar, search if any
-                for tag in content_div.find_all(["script", "style", "form", "input"]):
+                # Remove unwanted elements
+                for tag in content_div.find_all(["script", "style", "form", "input", "footer", "nav"]):
                     tag.decompose()
                 
                 text = content_div.get_text(separator="\n")
             else:
-                # Fallback to general extraction
                 text = soup.get_text(separator="\n")
 
             # Clean the text

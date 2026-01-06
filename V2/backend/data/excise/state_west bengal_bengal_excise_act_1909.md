@@ -1,0 +1,20 @@
+# Bengal Excise Act, 1909
+
+State: West Bengal
+Link: https://indiankanoon.org/doc/192770/
+
+[Cites
+0
+, Cited by
+0
+]
+Allahabad High Court
+Ramsewak S/O Khaderu vs Jag Prasad S/O Khaderu on 26 August, 2010
+Security Code Check for Accessing Judgment/Order Document
+eLegalix - Allahabad High Court Judgment Information System
+Welcome to eLegalix, Judgment Information System for Allahabad High Court and Its Bench at Lucknow. Disclaimer
+Please enter the 4-digit numerical security code below to download Judgment/Order Document
+Security Code:    GO
+Visit http://elegalix.allahabadhighcourt.in/elegalix/StartWebSearch.do for more
+Judgments/Orders delivered at Allahabad High Court and Its Bench at Lucknow. Disclaimer
+System designed and developed at Computer Centre, High Court, Allahabad.

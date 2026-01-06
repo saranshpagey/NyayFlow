@@ -28,9 +28,9 @@ supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 def ingest_docs():
     print(f"🔍 Scanning {DATA_DIR} for legal documents...")
     files = []
-    files.extend(glob.glob(os.path.join(DATA_DIR, "*.txt")))
-    files.extend(glob.glob(os.path.join(DATA_DIR, "*.md")))
-    files.extend(glob.glob(os.path.join(DATA_DIR, "*.csv")))
+    files.extend(glob.glob(os.path.join(DATA_DIR, "**/*.txt"), recursive=True))
+    files.extend(glob.glob(os.path.join(DATA_DIR, "**/*.md"), recursive=True))
+    files.extend(glob.glob(os.path.join(DATA_DIR, "**/*.csv"), recursive=True))
     
     if not files:
         print("⚠️ No text files found. Creating sample...")
