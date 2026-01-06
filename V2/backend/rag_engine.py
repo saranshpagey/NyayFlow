@@ -2,6 +2,7 @@ import os
 import re
 import spacy
 from supabase.client import create_client
+from typing import List
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 from scraper_service import scraper_service
@@ -51,22 +52,36 @@ class LegalRAG:
             print(f"⚠️ NER Error: {e}")
             return []
 
-    async def analyze_query(self, query: str):
-        """Perform RAG: Retrieve documents and generate human-like answer with Thinking."""
+    async def analyze_query(self, query: str, history: List[dict] = None):
+        """Perform RAG: Retrieve documents and generate human-like answer with Thinking and Context awareness."""
         if not self.active:
             print("⚠️ RAG Engine is not active.")
             return []
 
+        # Format history for the prompt
+        history_text = "N/A"
+        if history:
+            history_text = "\n".join([f"{msg['role'].upper()}: {msg['content']}" for msg in history[-5:]]) # Last 5 messages
+
         try:
-            # 1. Retrieval: Embed query and search Supabase
-            print(f"🔍 Searching for: {query}")
-            query_embedding = self.embeddings_model.embed_query(query)
+            # 0. Query Augmentation: If this is a follow-up, make the search query more specific
+            search_query = query
+            if history and len(query.split()) < 10:
+                print(f"🔄 Augmenting follow-up query: {query}")
+                context_summary = history[-1]['content'][:200]
+                # Simple augmentation: prepend the last AI topic
+                search_query = f"{query} (context: {context_summary})"
+                print(f"✨ Augmented Search: {search_query}")
+
+            # 1. Retrieval: Embed augmented query and search Supabase
+            print(f"🔍 Searching for: {search_query}")
+            query_embedding = self.embeddings_model.embed_query(search_query)
             
             res = self.supabase_client.rpc(
                 "match_documents",
                 {
                     "query_embedding": query_embedding,
-                    "match_threshold": 0.3, # Lowered threshold to find more data
+                    "match_threshold": 0.3, 
                     "match_count": 5,
                 }
             ).execute()
@@ -96,9 +111,7 @@ class LegalRAG:
             context_text = "\n\n".join(processed_contents)
             
             # 3. Gemini Generation (Structured JSON Mode)
-            prompt = f"""You are 'NyayaFlow AI', a top-tier legal assistant.
-            
-            You are 'NyayaFlow AI', a compassionate legal companion. Your purpose is not just to provide laws, but to guide people through the complexity of the legal world with empathy and clarity.
+            prompt = f"""You are 'NyayaFlow AI', a compassionate legal companion. Your purpose is not just to provide laws, but to guide people through the complexity of the legal world with empathy and clarity.
             
             CORE PERSONA:
             1. **Empathy First**: Legal issues are stressful. Before jumping into statutes, acknowledge the user's situation with human-like warmth. Use phrases like "I understand this is a difficult situation" or "It's completely normal to feel worried about this."
@@ -106,6 +119,9 @@ class LegalRAG:
             3. **Language & Heart**: Detect the USER's language (English, Hindi, Hinglish) and match the *emotional* frequency. If they sound worried, be soothing. If they are seeking quick info, be efficient but warm.
             4. **Conversational Density**: Break your answer into short, soulful 2-3 sentence paragraphs. Connect ideas organically rather than just listing sections.
             5. **Thinking & Care**: Your 'thinking' process should reflect you considering the human impact, not just the legal logic.
+
+            PREVIOUS CONVERSATION CONTEXT:
+            \"\"\"{history_text}\"\"\"
 
             RETRIEVED CONTEXT FROM LEGAL BRAIN:
             \"\"\"{context_text}\"\"\"

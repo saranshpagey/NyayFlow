@@ -200,7 +200,9 @@ const Research = () => {
         setLoading(true);
 
         try {
-            const data = await api.research.search(input);
+            // Prepare history for API (last 5 messages, only role and content)
+            const history = messages.slice(-5).map(m => ({ role: m.role, content: m.content }));
+            const data = await api.research.search(input, history);
             const primaryResult = data[0]; // The first result has the AI summary and widget data
 
             const aiMsg: Message = {

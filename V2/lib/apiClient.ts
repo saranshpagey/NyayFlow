@@ -20,14 +20,14 @@ export interface ResearchResult {
 
 export const api = {
     research: {
-        search: async (query: string): Promise<ResearchResult[]> => {
+        search: async (query: string, history?: { role: string, content: string }[]): Promise<ResearchResult[]> => {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/research`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ query }),
+                    body: JSON.stringify({ query, history }),
                 });
 
                 if (!response.ok) {

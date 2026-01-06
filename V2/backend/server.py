@@ -29,12 +29,13 @@ from typing import List, Optional
 
 class SearchQuery(BaseModel):
     query: str
+    history: Optional[List[dict]] = None
 
 @app.post("/api/research")
 async def search_legal_cases(query: SearchQuery):
     from rag_engine import rag_engine
-    # Call the RAG engine
-    results = await rag_engine.analyze_query(query.query)
+    # Call the RAG engine with history
+    results = await rag_engine.analyze_query(query.query, query.history)
     
     return {"results": results}
 
