@@ -174,6 +174,7 @@ const Research = () => {
     const [showSources, setShowSources] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -181,6 +182,13 @@ const Research = () => {
     useEffect(() => {
         scrollToBottom();
     }, [messages, loading]);
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    }, [input]);
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -356,18 +364,29 @@ const Research = () => {
                 {/* Fixed Input Area */}
                 <div className="fixed bottom-0 left-0 right-0 sm:left-64 p-6 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-800 z-40">
                     <div className="max-w-4xl mx-auto relative">
-                        <form onSubmit={handleSend} className="relative flex items-center bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-2 pr-2 border border-zinc-100 dark:border-zinc-800 focus-within:ring-0 focus-within:border-zinc-200 dark:focus-within:border-zinc-700">
-                            <input
-                                type="text"
+                        <form
+                            onSubmit={handleSend}
+                            className="relative flex items-end bg-white dark:bg-zinc-900 shadow-lg rounded-2xl p-2 pr-2 border border-zinc-100 dark:border-zinc-800 focus-within:ring-0 focus-within:border-zinc-200 dark:focus-within:border-zinc-700"
+                        >
+                            <textarea
+                                ref={textareaRef}
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSend(e as any);
+                                    }
+                                }}
                                 placeholder="Example: Punishment for cheque bounce..."
-                                className="flex-1 bg-transparent border-none text-[16px] text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-0 p-3 outline-none"
+                                rows={1}
+                                className="flex-1 bg-transparent border-none text-[16px] text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-0 p-3 outline-none resize-none max-h-48 scrollbar-hide"
+                                style={{ height: 'auto', minHeight: '48px' }}
                             />
                             <button
                                 type="submit"
                                 disabled={loading || !input.trim()}
-                                className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 shadow-md shadow-blue-500/20"
+                                className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50 shadow-md shadow-blue-500/20 mb-1"
                             >
                                 <PaperAirplaneIcon className="w-5 h-5" />
                             </button>
