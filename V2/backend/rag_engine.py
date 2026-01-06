@@ -119,6 +119,7 @@ class LegalRAG:
             - 'summary': {{ "key_point": "Impact/Outcome" }}
 
             RESPONSE FORMAT (Strict JSON only):
+            CRITICAL: Do not include any introductory text, greetings, or backticks outside the JSON block. Output ONLY a single valid JSON object.
             {{
                 "thinking": "Your step-by-step reasoning...",
                 "answer": "Your human-like, chunked response in the user's language...",
@@ -130,19 +131,24 @@ class LegalRAG:
             response = self.llm.invoke(prompt)
             raw_content = response.content
             
-            # JSON Parsing with cleanup
-            cleaned_content = raw_content.replace('```json', '').replace('```', '').strip()
-            
+            # JSON Parsing with robust regex extraction
             import json
             try:
-                parsed_response = json.loads(cleaned_content)
-                ai_answer = parsed_response.get("answer", "Analysis complete.")
-                ai_thinking = parsed_response.get("thinking", "Reasoning available.")
-                widget_data = parsed_response.get("widget", {"type": "summary", "data": {"key_point": "Legal Insight"}})
+                # Find the JSON block between the first { and last }
+                json_match = re.search(r'\{.*\}', raw_content, re.DOTALL)
+                if json_match:
+                    cleaned_content = json_match.group(0)
+                    parsed_response = json.loads(cleaned_content)
+                    ai_answer = parsed_response.get("answer", "Analysis complete.")
+                    ai_thinking = parsed_response.get("thinking", "Reasoning available.")
+                    widget_data = parsed_response.get("widget", {"type": "summary", "data": {"key_point": "Legal Insight"}})
+                else:
+                    raise ValueError("No JSON block found in response")
             except Exception as e:
-                print(f"❌ JSON Parse Failed: {e}")
-                ai_answer = raw_content
-                ai_thinking = "Could not parse thinking process."
+                print(f"❌ JSON Parse/Extraction Failed: {e}")
+                # Fallback: clean markdown if it's there
+                ai_answer = raw_content.replace('```json', '').replace('```', '').strip()
+                ai_thinking = "Reasoning omitted due to parsing error."
                 widget_data = {"type": "summary", "data": {"key_point": "Analysis Summary"}}
 
             # 4. Format Results with Entities
