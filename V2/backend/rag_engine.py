@@ -224,10 +224,10 @@ class LegalRAG:
                 ai_thinking = "Reasoning omitted due to parsing error."
                 widget_data = {"type": "summary", "data": {"key_point": "Analysis Summary"}}
 
-            # 4. Format Results with Entities
+            # 4. Format Results
             results = []
             for i, doc in enumerate(docs):
-                doc_entities = self.extract_entities(doc['content'])
+                # doc_entities = self.extract_entities(doc['content']) # Bottleneck: Seq NER on 5 large docs
                 results.append({
                     "id": f"rag_{i}",
                     "title": doc.get("metadata", {}).get("title", f"Source {i+1}"),
@@ -240,7 +240,7 @@ class LegalRAG:
                     "summary": ai_answer if i == 0 else "See primary analysis above.",
                     "thinking": ai_thinking if i == 0 else None,
                     "widget": widget_data if i == 0 else None,
-                    "entities": doc_entities
+                    "entities": [] # Disabled for latency optimization
                 })
 
             return results
