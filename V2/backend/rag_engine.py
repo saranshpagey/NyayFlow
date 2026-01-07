@@ -73,10 +73,39 @@ class LegalRAG:
                 search_query = f"{query} (context: {context_summary})"
                 print(f"✨ Augmented Search: {search_query}")
 
-            # 1. Retrieval: Embed augmented query and search Supabase
-            print(f"🔍 Searching for: {search_query}")
+            # 1. Semantic Cache Check
+            print(f"🧠 Checking Semantic Cache for: {search_query}")
             query_embedding = self.embeddings_model.embed_query(search_query)
             
+            cache_res = self.supabase_client.rpc(
+                "match_cache",
+                {
+                    "query_embedding": query_embedding,
+                    "match_threshold": 0.95, 
+                    "match_count": 1,
+                }
+            ).execute()
+
+            if cache_res.data:
+                print("⚡ Cache Hit! Returning stored response.")
+                cached_item = cache_res.data[0]
+                # Return in the same format as current results expect
+                return [{
+                    "id": "cache_hit",
+                    "title": "Cached Intelligence",
+                    "court": "NyayaFlow Memory",
+                    "date": "2024",
+                    "citation": "N/A",
+                    "snippet": "Instant retrieval from semantic cache.",
+                    "status": "good_law",
+                    "summary": cached_item['response_json'].get("answer"),
+                    "thinking": cached_item['response_json'].get("thinking"),
+                    "widget": cached_item['response_json'].get("widget"),
+                    "entities": []
+                }]
+
+            # 2. Retrieval: Embed augmented query and search Supabase (Regular docs)
+            print(f"🔍 Searching Vector DB for: {search_query}")
             res = self.supabase_client.rpc(
                 "match_documents",
                 {
@@ -128,6 +157,23 @@ class LegalRAG:
 
             USER QUERY: \"\"\"{query}\"\"\"
 
+            FEW-SHOT EXAMPLES:
+            Example 1 (Statute Explanation):
+            USER: What is Section 138 of NI Act?
+            ASSISTANT: {
+                "thinking": "User is asking about cheque bounce. I need to explain Section 138 with empathy.",
+                "answer": "I'm sorry to hear you're dealing with a cheque issue. Section 138 of the Negotiable Instruments Act is the law that protects you when a cheque is dishonored due to insufficient funds. It’s essentially a way to ensure that people take their financial commitments seriously.",
+                "widget": { "type": "statute", "data": { "title": "Section 138 NI Act", "text": "Dishonour of cheque for insufficiency, etc., of funds in the account.", "explanation": "Criminalizes dishonoring of cheques." } }
+            }
+
+            Example 2 (Drafting):
+            USER: Draft a bail application for my brother in a theft case at SBI Delhi.
+            ASSISTANT: {
+                "thinking": "User needs a bail draft. I will use the bail template and fill in the details.",
+                "answer": "I understand this is a difficult time for your family. I have prepared a draft for a Regular Bail Application. I've filled in 'SBI Delhi' and 'Theft' as per your details. Please review the bolded sections before filing.",
+                "widget": { "type": "procedure", "data": { "title": "Bail Filing Steps", "steps": ["Identify the correct Magistrate", "File the application with Vakalatnama", "Argue for interim relief"] } }
+            }
+
             WIDGET TYPES (Choose the best fit):
             - 'statute': {{ "title": "Section Name", "text": "Original text", "explanation": "Simple summary" }}
             - 'penalty': {{ "crime": "Offense name", "imprisonment": "Duration", "fine": "Amount/Details" }}
@@ -158,6 +204,17 @@ class LegalRAG:
                     ai_answer = parsed_response.get("answer", "Analysis complete.")
                     ai_thinking = parsed_response.get("thinking", "Reasoning available.")
                     widget_data = parsed_response.get("widget", {"type": "summary", "data": {"key_point": "Legal Insight"}})
+                    
+                    # 3.5 Store in Cache for future use
+                    try:
+                        self.supabase_client.table("answer_cache").insert({
+                            "query_text": search_query,
+                            "query_embedding": query_embedding,
+                            "response_json": parsed_response
+                        }).execute()
+                        print("💾 Response saved to semantic cache.")
+                    except Exception as cache_err:
+                        print(f"⚠️ Cache Save Failed (Table might not exist): {cache_err}")
                 else:
                     raise ValueError("No JSON block found in response")
             except Exception as e:
