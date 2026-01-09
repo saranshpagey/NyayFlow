@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" alt="NyayaFlow Banner" width="100%">
   <br />
   <h1>🏛️ NyayaFlow</h1>
   <p><b>The Compassionate Legal Companion for the Digital Era</b></p>
