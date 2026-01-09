@@ -1,0 +1,77 @@
+---
+title: Special procedure in respect of Money Bills
+type: Constitutional Article
+source: Constitution of India
+source_url: https://www.constitutionofindia.net/articles/article-109-special-procedure-in-respect-of-money-bills/
+date: 1950-01-26
+court: Constitutional Document
+---
+
+View all parts
+X
+Part I
+Part II
+Part III
+Part IV
+Part IVA
+Part V
+Part VI
+Part VII
+Part VIII
+Part IX
+Part IXA
+Part IXB
+Part X
+Part XI
+Part XII
+Part XIII
+Part XIV
+Part XIVA
+Part XV
+Part XVI
+Part XVII
+Part XVIII
+Part XIX
+Part XX
+Part XXI
+Part XXII
+Part V
+Article
+109
+Special procedure in respect of Money Bills
+(1) A Money Bill shall not be introduced in the Council of States.
+(2) After a Money Bill has been passed by the House of the People it shall be transmitted to the Council of States for its recommendations and the Council of States shall within a period of fourteen days from the date of its receipt of the Bill return the Bill to the House of the People with its recommendations and the House of the People may thereupon either accept or reject all or any of the recommendations of the Council of States.
+(3) If the House of the People accepts any of the recommendations of the Council of States, the Money Bill shall be deemed to have been passed by both Houses with the amendments recommended by the Council of States and accepted by the House of the People.
+(4) If the House of the People does not accept any of the recommendations of the Council of States, the Money Bill shall be deemed to have been passed by both Houses in the form in which it was passed by the House of the People without any of the amendments recommended by the Council of States.
+(5) If a Money Bill passed by the House of the People and transmitted to the Council of States for its recommendations is not returned to the House of the People within the said period of fourteen days, it shall be deemed to have been passed by both Houses at the expiration of the said period in the form in which it was passed by the House of the People.
+Version 1
+Article 89, Draft Constitution 1948
+(1) A Money Bill shall not be introduced in the Council of States.
+(2) After a Money Bill has been passed by the House of the People it shall be transmitted to the Council of States for its recommendations and the Council of States shall within a period of thirty days from the date of its receipt of the Bill return the Bill to the House of the People with its recommendations and the House of the People may thereupon either accept or reject all or any of the recommendations of the Council of States.
+(3) If the House of the People accepts any of the recommendations of the Council of States, the Money Bill shall be deemed to have been passed by both Houses with the amendments recommended by the Council of States and accepted by the House of the People.
+(4) If the House of the People does not accept any of the recommendations of the Council of States, the Money Bill shall be deemed to have been passed by both Houses in the form in which it was passed by the House of the People without any of the amendments recommended by the Council of States.
+(5) If a Money Bill passed by the House of the People and transmitted to the Council of States for its recommendations is not returned to the House of the People within the said period of thirty days, it shall be deemed to have been passed by both Houses at the expiration of the said period in the form in which it was passed by the House of the People.
+Version 2
+(1) A Money Bill shall not be introduced in the Council of States.
+(2) After a Money Bill has been passed by the House of the People it shall be transmitted to the Council of States for its recommendations and the Council of States shall within a period of fourteen days from the date of its receipt of the Bill return the Bill to the House of the People with its recommendations and the House of the People may thereupon either accept or reject all or any of the recommendations of the Council of States.
+⁠(3) If the House of the People accepts any of the recommendations of the Council of States, the Money Bill shall be deemed to have been passed by both Houses with the amendments recommended by the Council of States and accepted by the House of the People.
+⁠(4) If the House of the People does not accept any of the recommendations of the Council of States, the Money Bill shall be deemed to have been passed by both Houses in the form in which it was passed by the House of the People without any of the amendments recommended by the Council of States.
+⁠(5) If a Money Bill passed by the House of the People and transmitted to the Council of States for its recommendations is not returned to the House of the People within the said period of fourteen days, it shall be deemed to have been passed by both Houses at the expiration of the said period in the form in which it was passed by the House of the People.
+Summary
+Draft Constitution 89 (Article 109) was discussed on
+20 May 1949
+. It provided for a special procedure to pass Money Bills.
+A member
+moved
+an amendment to replace ‘thirty days’ to ‘twenty one days’ in clauses (2) and (5). He
+argued
+that practically, after introducing a Money Bill, one House would not take more than a week to transfer it to the other House for recommendations. The Chairman of the Drafting Committee further
+proposed
+to reduce the time limit to fourteen days. He
+noted
+that unlike Britain, the Indian Constitution empowered the House of Councils to interfere and recommend on financial matters. And budget-related matters require to be moved expeditiously.
+The Assembly
+accepted
+to reduce the time limit to thirty days and
+adopted
+the Draft Article on 20 May 1949.

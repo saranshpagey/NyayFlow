@@ -1,27 +1,213 @@
-/* Base styles - Tailwind is loaded via CDN in index.html */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Overused Grotesk - Light (300) */
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('./components/fonts/OverusedGrotesk-v0.5-alpha.1/ttf/OverusedGrotesk-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
 
-body {
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Overused Grotesk - Book/Regular (400) */
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('./components/fonts/OverusedGrotesk-v0.5-alpha.1/ttf/OverusedGrotesk-Book.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* Ensure smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* Overused Grotesk - Roman (400 alternative) */
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('./components/fonts/OverusedGrotesk-v0.5-alpha.1/ttf/OverusedGrotesk-Roman.ttf') format('truetype');
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* Animation delay utilities */
-.animation-delay-2000 {
-  animation-delay: 2s;
+/* Overused Grotesk - Medium (500) */
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('./components/fonts/OverusedGrotesk-v0.5-alpha.1/ttf/OverusedGrotesk-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
 
-.animation-delay-4000 {
-  animation-delay: 4s;
+/* Overused Grotesk - SemiBold (600) */
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('./components/fonts/OverusedGrotesk-v0.5-alpha.1/ttf/OverusedGrotesk-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Overused Grotesk - Bold (700) */
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('./components/fonts/OverusedGrotesk-v0.5-alpha.1/ttf/OverusedGrotesk-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Overused Grotesk - ExtraBold (800) */
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('./components/fonts/OverusedGrotesk-v0.5-alpha.1/ttf/OverusedGrotesk-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Overused Grotesk - Black (900) */
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('./components/fonts/OverusedGrotesk-v0.5-alpha.1/ttf/OverusedGrotesk-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* The following directives are required for Tailwind CSS. If you see warnings, it's a VS Code configuration setting. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Overused Grotesk", sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Hide scrollbars globally while maintaining scroll functionality */
+  * {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-xl;
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, #4f46e5 50%, #818cf8 100%);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500;
+  }
+
+  .mesh-gradient {
+    background-color: hsla(0, 0%, 100%, 1);
+    background-image: radial-gradient(at 40% 20%, hsla(243, 75%, 58%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(258, 83%, 64%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(224, 76%, 48%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 80% 50%, hsla(243, 75%, 58%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(258, 83%, 64%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, hsla(224, 76%, 48%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 0%, hsla(243, 75%, 58%, 0.1) 0px, transparent 50%);
+  }
+
+  .dark .mesh-gradient {
+    background-color: hsla(240, 10%, 4%, 1);
+    background-image: radial-gradient(at 40% 20%, hsla(243, 75%, 58%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(258, 83%, 64%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(224, 76%, 48%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 80% 50%, hsla(243, 75%, 58%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(258, 83%, 64%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, hsla(224, 76%, 48%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 0%, hsla(243, 75%, 58%, 0.05) 0px, transparent 50%);
+  }
+
+  /* Font Utilities - All use Overused Grotesk with different weights */
+  .font-heading {
+    font-family: "Overused Grotesk", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .font-body {
+    font-family: "Overused Grotesk", sans-serif;
+    font-weight: 400;
+    line-height: 1.75;
+  }
+
+  .font-legal {
+    font-family: "Overused Grotesk", sans-serif;
+    font-weight: 500;
+    line-height: 1.75;
+  }
+
+  .font-technical {
+    font-family: "Overused Grotesk", sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
 }

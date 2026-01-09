@@ -50,6 +50,10 @@ create table if not exists documents (
   embedding vector(768)
 );
 
+-- Add high-speed HNSW index for the documents table (pgvector 0.5.0+)
+create index if not exists documents_hnsw_idx on documents 
+using hnsw (embedding vector_cosine_ops);
+
 -- Create a function to search for documents
 create or replace function match_documents (
   query_embedding vector(768),
@@ -73,6 +77,47 @@ begin
     1 - (documents.embedding <=> query_embedding) as similarity
   from documents
   where 1 - (documents.embedding <=> query_embedding) > match_threshold
+  order by similarity desc
+  limit match_count;
+end;
+
+-- 4. Create a table for Semantic Caching (Intelligence Memory)
+create table if not exists answer_cache (
+  id uuid primary key default uuid_generate_v4(),
+  query_text text not null,
+  query_embedding vector(768), 
+  response_json jsonb not null,
+  created_at timestamp with time zone default current_timestamp
+);
+
+-- Search index for semantic cache
+create index if not exists answer_cache_embedding_idx on answer_cache 
+using ivfflat (query_embedding vector_cosine_ops)
+with (lists = 100);
+
+-- Function to match cached answers
+create or replace function match_cache(
+  query_embedding vector(768),
+  match_threshold float,
+  match_count int
+)
+returns table (
+  id uuid,
+  query_text text,
+  response_json jsonb,
+  similarity float
+)
+language plpgsql
+as $$
+begin
+  return query
+  select
+    answer_cache.id,
+    answer_cache.query_text,
+    answer_cache.response_json,
+    1 - (answer_cache.query_embedding <=> match_cache.query_embedding) as similarity
+  from answer_cache
+  where 1 - (answer_cache.query_embedding <=> match_cache.query_embedding) > match_threshold
   order by similarity desc
   limit match_count;
 end;

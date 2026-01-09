@@ -1,0 +1,50 @@
+---
+title: "BNS Section 353: (1) Whoever makes, publishes or circulates any statement, false information,"
+section: "353"
+act: "Bharatiya Nyaya Sanhita, 2023"
+date: "2023-12-25"
+effective_date: "2024-07-01"
+crossref_ipc: ["505"]
+source_url: "Official PDF"
+ingested_type: "statute_section"
+---
+
+(1) Whoever makes, publishes or circulates any statement, false information,
+rumour, or report, including through electronic means—
+(a) with intent to cause, or which is likely to cause, any officer, soldier, sailor or
+airman in the Army, Navy or Air Force of India to mutiny or otherwise disregard or fail
+in his duty as such; or
+(b) with intent to cause, or which is likely to cause, fear or alarm to the public, or
+to any section of the public whereby any person may be induced to commit an offence
+against the State or against the public tranquillity; or
+(c) with intent to incite, or which is likely to incite, any class or community of
+persons to commit any offence against any other class or community,
+shall be punished with imprisonment which may extend to three years, or with fine, or with
+both.
+(2) Whoever makes, publishes or circulates any statement or report containing false
+information, rumour or alarming news, including through electronic means, with intent to
+create or promote, or which is likely to create or promote, on grounds of religion, race, place
+of birth, residence, language, caste or community or any other ground whatsoever, feelings
+of enmity, hatred or ill will between different religious, racial, language or regional groups or
+castes or communities, shall be punished with imprisonment which may extend to three
+years, or with fine, or with both.
+(3) Whoever commits an offence specified in sub-section (2) in any place of worship
+or in any assembly engaged in the performance of religious worship or religious ceremonies,
+shall be punished with imprisonment which may extend to five years and shall also be liable
+to fine.
+Intentional
+insult with
+intent to
+provoke
+breach of
+peace.
+Statements
+conducing to
+public
+mischief.
+98 THE GAZETTE OF INDIA EXTRAORDINAR Y [Part II—_____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+Exception.—It does not amount to an offence, within the meaning of this section,
+when the person making, publishing or circulating any such statement, false information,
+rumour or report, has reasonable grounds for believing that such statement, false information,
+rumour or report is true and makes, publishes or circulates it in good faith and without any
+such intent as aforesaid.

@@ -46,18 +46,18 @@ const Login = () => {
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-zinc-900 to-zinc-700 dark:from-white dark:to-zinc-200 flex items-center justify-center shadow-lg shadow-zinc-900/10 transition-transform group-hover:scale-105">
                         <ScaleIcon className="w-6 h-6 text-white dark:text-zinc-900" />
                     </div>
-                    <span className="font-display font-bold text-2xl tracking-tight text-zinc-900 dark:text-white">
+                    <span className="font-display font-semibold text-2xl tracking-tight text-zinc-900 dark:text-white">
                         NyayaFlow
                     </span>
                 </Link>
-                <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                <h2 className="mt-6 text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                     {isSignUp ? 'Create your account' : 'Sign in to your account'}
                 </h2>
                 <p className="mt-2 text-center text-sm text-zinc-600 dark:text-zinc-400">
                     Or{' '}
                     <button
                         onClick={() => setIsSignUp(!isSignUp)}
-                        className="font-medium text-blue-600 hover:text-blue-500 hover:underline"
+                        className="font-semibold text-blue-600 hover:text-blue-500 hover:underline"
                     >
                         {isSignUp ? 'sign in to existing account' : 'start your 14-day free trial'}
                     </button>
@@ -68,7 +68,7 @@ const Login = () => {
                 <div className="bg-white dark:bg-zinc-950 py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-zinc-200 dark:border-zinc-800">
                     <form className="space-y-6" onSubmit={handleAuth}>
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <label htmlFor="email" className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                                 Email address
                             </label>
                             <div className="mt-1">
@@ -86,7 +86,7 @@ const Login = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <label htmlFor="password" className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                                 Password
                             </label>
                             <div className="mt-1">

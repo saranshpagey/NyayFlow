@@ -11,7 +11,7 @@ const Footer = () => {
                             <div className="w-8 h-8 bg-zinc-900 dark:bg-white rounded-lg flex items-center justify-center">
                                 <ScaleIcon className="w-5 h-5 text-white dark:text-zinc-900" />
                             </div>
-                            <span className="font-display font-bold text-xl text-zinc-900 dark:text-white">NyayaFlow</span>
+                            <span className="font-display font-semibold text-xl text-zinc-900 dark:text-white">NyayaFlow</span>
                         </div>
                         <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed max-w-xs mb-6">
                             Democratizing legal access in India through verifiable, secure, and intelligent AI.
@@ -25,7 +25,7 @@ const Footer = () => {
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-zinc-900 dark:text-white mb-6 text-sm uppercase tracking-wider">Product</h4>
+                        <h4 className="font-semibold text-zinc-900 dark:text-white mb-6 text-sm uppercase tracking-wider">Product</h4>
                         <ul className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
                             <li><a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Features</a></li>
                             <li><a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Security</a></li>
@@ -35,7 +35,7 @@ const Footer = () => {
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-zinc-900 dark:text-white mb-6 text-sm uppercase tracking-wider">Company</h4>
+                        <h4 className="font-semibold text-zinc-900 dark:text-white mb-6 text-sm uppercase tracking-wider">Company</h4>
                         <ul className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
                             <li><a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">About</a></li>
                             <li><a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Legal</a></li>
@@ -52,7 +52,7 @@ const Footer = () => {
                     <div className="flex gap-4 items-center">
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/20">
                             <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                            <span className="text-[10px] font-medium text-green-600 dark:text-green-500">Systems Operational</span>
+                            <span className="text-xs font-semibold text-green-600 dark:text-green-500">Systems Operational</span>
                         </div>
                         <span className="text-xs text-zinc-400 cursor-pointer hover:underline">Privacy Policy</span>
                         <span className="text-xs text-zinc-400 cursor-pointer hover:underline">Terms of Service</span>

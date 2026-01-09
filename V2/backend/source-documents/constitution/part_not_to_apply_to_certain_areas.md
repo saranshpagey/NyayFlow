@@ -1,0 +1,60 @@
+---
+title: Part not to apply to certain areas
+type: Constitutional Article
+source: Constitution of India
+source_url: https://www.constitutionofindia.net/articles/article-243m-part-not-to-apply-to-certain-areas/
+date: 1950-01-26
+court: Constitutional Document
+---
+
+View all parts
+X
+Part I
+Part II
+Part III
+Part IV
+Part IVA
+Part V
+Part VI
+Part VII
+Part VIII
+Part IX
+Part IXA
+Part IXB
+Part X
+Part XI
+Part XII
+Part XIII
+Part XIV
+Part XIVA
+Part XV
+Part XVI
+Part XVII
+Part XVIII
+Part XIX
+Part XX
+Part XXI
+Part XXII
+Part IX
+Article
+243M
+Part not to apply to certain areas
+(1) Nothing in this Part shall apply to the Scheduled Areas referred to in clause (1), and the tribal areas referred to in clause (2), of article 244.
+(2) Nothing in this Part shall apply to—
+(a) the States of Nagaland, Meghalaya and Mizoram;
+(b) the hill areas in the State of Manipur for which District Councils exist under any law for the time being in force.
+(3) Nothing in this Part—
+(a) relating to Panchayats at the district level shall apply to the hill areas of the District of Darjeeling in the State of West Bengal for which Darjeeling Gorkha Hill Council exists under any law for the time being in force;
+(b) shall be construed to affect the functions and powers of the Darjeeling Gorkha Hill Council constituted under such law.
+(3A) Nothing in article 243D, relating to reservation of seats for the Scheduled Castes, shall apply to the State of Arunachal Pradesh.
+(4) Notwithstanding anything in this Constitution,—
+(a) the Legislature of a State referred to in sub-clause (a) of clause (2) may, by law, extend this Part to that State, except the areas, if any, referred to in clause (1), if the Legislative Assembly of that State passes a resolution to that effect by a majority of the total membership of that House and by a majority of not less than two-thirds of the members of that House present and voting;
+(b) Parliament may, by law, extend the provisions of this Part to the Scheduled Areas and the tribal areas referred to in clause (1) subject to such exceptions and modifications as may be specified in such law, and no such law shall be deemed to be an amendment of this Constitution for the purposes of article 368.
+Summary
+This Article in its present form was not debated in the Constituent Assembly. It was inserted by the
+Constitution (Seventy- third Amendment) Act, 1992
+and the Original Part IX was omitted by the
+Constitution (Seventh Amendment) Act, 1956.
+Further, clause 3(a) was inserted by
+the Constitution (Eighty-third Amendment) Act, 2000
+.

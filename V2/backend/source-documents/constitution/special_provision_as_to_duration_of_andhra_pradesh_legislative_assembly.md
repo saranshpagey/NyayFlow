@@ -1,0 +1,45 @@
+---
+title: Special provision as to duration of Andhra Pradesh Legislative Assembly
+type: Constitutional Article
+source: Constitution of India
+source_url: https://www.constitutionofindia.net/articles/article-378a-special-provision-as-to-duration-of-andhra-pradesh-legislative-assembly/
+date: 1950-01-26
+court: Constitutional Document
+---
+
+View all parts
+X
+Part I
+Part II
+Part III
+Part IV
+Part IVA
+Part V
+Part VI
+Part VII
+Part VIII
+Part IX
+Part IXA
+Part IXB
+Part X
+Part XI
+Part XII
+Part XIII
+Part XIV
+Part XIVA
+Part XV
+Part XVI
+Part XVII
+Part XVIII
+Part XIX
+Part XX
+Part XXI
+Part XXII
+Part XXI
+Article
+378A
+Special provision as to duration of Andhra Pradesh Legislative Assembly
+Notwithstanding anything contained in article 172, the Legislative Assembly of the State of Andhra Pradesh as constituted under the provisions of sections 28 and 29 of the States Reorganisation Act, 1956, shall, unless sooner dissolved, continue for a period of five years from the date referred to in the said section 29 and no longer and the expiration of the said period shall operate as a dissolution of that Legislative Assembly.
+SUMMARY
+Article 378A was inserted by
+the Constitution (Seventh Amendment) Act, 1956.

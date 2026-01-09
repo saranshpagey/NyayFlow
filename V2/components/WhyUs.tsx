@@ -10,7 +10,7 @@ const WhyUs = () => {
         <section className="py-24 bg-white dark:bg-zinc-950 relative border-t border-zinc-100 dark:border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16 max-w-3xl mx-auto">
-                    <h2 className="font-display text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-6">Why NyayaFlow?</h2>
+                    <h2 className="font-display text-4xl md:text-5xl font-semibold text-zinc-900 dark:text-white mb-6">Why NyayaFlow?</h2>
                     <p className="text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed">Precision where it counts. We prioritize accuracy and security over generative fluff.</p>
                 </div>
 
@@ -36,7 +36,7 @@ const WhyUs = () => {
                             <div className="w-14 h-14 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
                                 {item.icon}
                             </div>
-                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">{item.title}</h3>
+                            <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-3">{item.title}</h3>
                             <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">{item.desc}</p>
                         </div>
                     ))}

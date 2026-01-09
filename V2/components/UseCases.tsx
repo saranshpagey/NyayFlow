@@ -13,7 +13,7 @@ const UseCases = () => {
                     {/* For Startups */}
                     <div className="relative pl-8 md:pl-12 border-l-2 border-zinc-200 dark:border-zinc-800">
                         <div className="absolute -left-[9px] top-0 w-4 h-4 bg-white dark:bg-zinc-900 border-2 border-blue-500 rounded-full shadow-sm ring-4 ring-blue-50 dark:ring-blue-900/20"></div>
-                        <h3 className="font-display text-3xl font-bold text-zinc-900 dark:text-white mb-6">For Startups</h3>
+                        <h3 className="font-display text-3xl font-semibold text-zinc-900 dark:text-white mb-6">For Startups</h3>
                         <ul className="space-y-6">
                             {[
                                 "Validate business name trademark availability instantly.",
@@ -27,7 +27,7 @@ const UseCases = () => {
                             ))}
                         </ul>
                         <div className="mt-8">
-                            <button className="text-blue-600 dark:text-blue-400 font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                            <button className="text-blue-600 dark:text-blue-400 font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all">
                                 Explore Startup Tools <ArrowRightIcon className="w-4 h-4" />
                             </button>
                         </div>
@@ -36,7 +36,7 @@ const UseCases = () => {
                     {/* For Lawyers */}
                     <div className="relative pl-8 md:pl-12 border-l-2 border-zinc-200 dark:border-zinc-800">
                         <div className="absolute -left-[9px] top-0 w-4 h-4 bg-white dark:bg-zinc-900 border-2 border-orange-500 rounded-full shadow-sm ring-4 ring-orange-50 dark:ring-orange-900/20"></div>
-                        <h3 className="font-display text-3xl font-bold text-zinc-900 dark:text-white mb-6">For Advocates</h3>
+                        <h3 className="font-display text-3xl font-semibold text-zinc-900 dark:text-white mb-6">For Advocates</h3>
                         <ul className="space-y-6">
                             {[
                                 "Slash research time by 90% with precise, verified citations.",
@@ -50,7 +50,7 @@ const UseCases = () => {
                             ))}
                         </ul>
                         <div className="mt-8">
-                            <button className="text-orange-600 dark:text-orange-400 font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                            <button className="text-orange-600 dark:text-orange-400 font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all">
                                 Explore Advocate Tools <ArrowRightIcon className="w-4 h-4" />
                             </button>
                         </div>

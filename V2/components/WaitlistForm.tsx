@@ -28,7 +28,7 @@ const WaitlistForm = () => {
             </div>
 
             <div className="max-w-3xl mx-auto px-4 relative z-10 text-center">
-                <h2 className="font-display text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-6 tracking-tight">Built for the future of Indian Law.</h2>
+                <h2 className="font-display text-4xl md:text-5xl font-medium text-zinc-900 dark:text-white mb-6 tracking-tight">Built for the future of Indian Law.</h2>
                 <p className="text-xl text-zinc-600 dark:text-zinc-400 mb-10 leading-relaxed">
                     Join the private beta. Secure your spot to access the most advanced legal OS built for India.
                 </p>
@@ -37,7 +37,7 @@ const WaitlistForm = () => {
                     {status === "success" ? (
                         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-8 rounded-2xl animate-fade-in-up">
                             <CheckBadgeIcon className="w-10 h-10 text-green-600 dark:text-green-500 mx-auto mb-4" />
-                            <h3 className="font-bold text-xl text-green-800 dark:text-green-300 mb-2">You're on the list!</h3>
+                            <h3 className="font-medium text-xl text-green-800 dark:text-green-300 mb-2">You're on the list!</h3>
                             <p className="text-green-700 dark:text-green-400">We'll notify you as soon as your spot opens up.</p>
                         </div>
                     ) : (
@@ -53,7 +53,7 @@ const WaitlistForm = () => {
                             <button
                                 type="submit"
                                 disabled={status === "loading"}
-                                className="px-8 py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px] text-base"
+                                className="px-8 py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px] text-base"
                             >
                                 {status === "loading" ? (
                                     <ArrowPathIcon className="w-5 h-5 animate-spin" />
