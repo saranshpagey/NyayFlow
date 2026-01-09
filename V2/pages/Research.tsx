@@ -284,7 +284,8 @@ const Research = () => {
     const [simplifyMode, setSimplifyMode] = useState(false);
     const [sourcePanelData, setSourcePanelData] = useState<{ sources: any[], activeId: string } | null>(null);
     const [showExportBrief, setShowExportBrief] = useState(false);
-    const [exportBriefData, setExportBriefData] = useState<{ query: string, results: ResearchResult[], metadata?: any } | null>(null);
+    const [exportBriefData, setExportBriefData] = useState<any>(null);
+    const processedInitialSessionsRef = useRef<Set<string>>(new Set());
 
     const getDynamicStatuses = (query: string) => {
         if (dynamicPlan.length > 0) return dynamicPlan;
@@ -444,16 +445,20 @@ const Research = () => {
     useEffect(() => {
         if (!activeSessionId || !activeSession) return;
 
+        // Don't process the same session twice
+        if (processedInitialSessionsRef.current.has(activeSessionId)) return;
+
         const msgs = activeSession.messages;
         // Check if this is a new session with exactly 1 user message and no AI response
         if (msgs.length === 1 && msgs[0].role === 'user' && !loadingSessionId) {
             const initialMessage = msgs[0].content;
-            // Trigger the API call
-            handleSend(initialMessage);
+            processedInitialSessionsRef.current.add(activeSessionId);
+            // Trigger the API call without adding the message again
+            handleSend(initialMessage, true);
         }
-    }, [activeSessionId]); // Only run when activeSessionId changes
+    }, [activeSessionId, activeSession]); // Added activeSession to dependencies to avoid race conditions
 
-    const handleSend = async (e: React.FormEvent | string) => {
+    const handleSend = async (e: React.FormEvent | string, skipAddMessage: boolean = false) => {
         if (typeof e !== 'string') e.preventDefault();
 
         const queryText = typeof e === 'string' ? e : input;
@@ -485,8 +490,14 @@ const Research = () => {
             targetSessionId = createNewSession();
         }
 
-        const userMsg: Message = { id: Date.now().toString(), role: 'user', content: queryText };
-        addMessage(userMsg, targetSessionId);
+        if (!skipAddMessage) {
+            // Robust check: don't add if this same message was just added (e.g. by createNewSession)
+            const lastMsg = activeSession?.messages[activeSession.messages.length - 1];
+            if (!(lastMsg?.role === 'user' && lastMsg.content === queryText)) {
+                const userMsg: Message = { id: Date.now().toString(), role: 'user', content: queryText };
+                addMessage(userMsg, targetSessionId);
+            }
+        }
         setLastQuery(queryText);
         setInput('');
         setLoadingSessionId(targetSessionId);
@@ -561,16 +572,16 @@ const Research = () => {
 
             // Drafting views are now exclusively user-triggered via LegalDraftWidget buttons
         } catch (err) {
-            console.error(err);
+            console.error("Research Error Details:", err);
             if (!messageSent) {
+                const errorMsg = err instanceof Error ? err.message : "Unknown error";
                 addMessage({
                     id: (Date.now() + 1).toString(),
                     role: 'ai',
-                    content: "I'm having trouble connecting to my legal brain. Is the backend server running? 🧠❌"
+                    content: `I'm having trouble connecting to my legal brain. Error: ${errorMsg}. Is the backend server running? 🧠❌`
                 }, targetSessionId);
             } else {
-                // If message was sent but post-processing failed, just toast or log
-                console.error("Post-response processing failed", err);
+                console.error("Post-response processing failed:", err);
             }
         } finally {
             setLoadingSessionId(null);
