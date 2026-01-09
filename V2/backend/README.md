@@ -1,285 +1,127 @@
-# NyayaFlow AI Backend
-
-**Multi-Agent Legal Intelligence System**
-
-## 🎯 Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     FastAPI Server                          │
-│                      (server.py)                            │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Legal Agent Orchestrator                       │
-│             (agents/orchestrator.py)                        │
-│                                                             │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Intent Classification Engine                        │  │
-│  │  • Research  • Draft  • Analyze  • Explain          │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                                                             │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Agent Router                                        │  │
-│  │  Selects appropriate agent(s) based on intent       │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-         ┌───────────┼───────────┐
-         ▼           ▼           ▼
-    ┌────────┐  ┌────────┐  ┌────────┐
-    │Research│  │ Draft  │  │Analyze │
-    │ Agent  │  │ Agent  │  │ Agent  │
-    └───┬────┘  └────────┘  └────────┘
-        │
-        ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    RAG Engine                               │
-│                  (rag_engine.py)                            │
-│                                                             │
-│  • Semantic Cache (Supabase)                               │
-│  • Vector Search (ChromaDB)                                │
-│  • Gemini 2.0 Flash LLM                                    │
-│  • Smart Web Scraping                                      │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## 🚀 Quick Start
-
-### 1. Environment Setup
-
-Create a `.env` file:
-
-```env
-GOOGLE_API_KEY=your_google_api_key
-SUPABASE_URL=your_supabase_url
-SUPABASE_SERVICE_KEY=your_supabase_service_key
-```
-
-### 2. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Start Server
-
-```bash
-# Option 1: Using the startup script (recommended)
-./start.sh
-
-# Option 2: Direct Python
-python3 server.py
-```
-
-Server will start on `http://localhost:8000`
-
-## 📡 API Endpoints
-
-### Core Endpoints
-
-#### `POST /api/research`
-Main research endpoint with intelligent routing.
-
-**Request:**
-```json
-{
-  "query": "What is Section 420 IPC?",
-  "session_id": "user_123",
-  "history": [
-    {"role": "user", "content": "Previous message"},
-    {"role": "assistant", "content": "Previous response"}
-  ],
-  "use_orchestrator": true
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "results": [
-    {
-      "id": "rag_main",
-      "title": "AI Legal Analysis",
-      "summary": "Section 420 of the Indian Penal Code...",
-      "thinking": "Step-by-step reasoning...",
-      "widget": {
-        "type": "statute",
-        "data": {...}
-      }
-    }
-  ],
-  "metadata": {
-    "intent": {
-      "primary_intent": "research",
-      "complexity": "simple"
-    },
-    "agent_used": "research_agent",
-    "orchestrated": true
-  }
-}
-```
-
-#### `POST /api/draft/generate`
-Generate legal documents.
-
-**Request:**
-```json
-{
-  "query": "Draft a Vakalatnama for Bombay High Court",
-  "session_id": "user_123",
-  "history": []
-}
-```
-
-#### `POST /api/draft/polish`
-Refine existing drafts.
-
-**Request:**
-```json
-{
-  "content": "Original draft text...",
-  "instructions": "Make it more formal and add citations"
-}
-```
-
-#### `GET /api/agents/status`
-Get status of all agents.
-
-**Response:**
-```json
-{
-  "orchestrator_active": true,
-  "rag_engine_active": true,
-  "available_agents": [
-    "research_agent",
-    "draft_agent",
-    "case_analyzer",
-    "statute_expert",
-    "procedure_guide"
-  ],
-  "version": "2.0.0"
-}
-```
-
-### Utility Endpoints
-
-- `GET /health` - Health check
-- `GET /api/test/orchestrator` - Test orchestrator functionality
-
-## 🧠 Agent System
-
-### Intent Classification
-
-The orchestrator automatically classifies queries into:
-
-- **Research**: Finding case law, precedents, legal principles
-- **Draft**: Creating legal documents (notices, petitions, etc.)
-- **Analyze**: Analyzing specific cases or situations
-- **Explain**: Explaining legal concepts or procedures
-- **Procedure**: Step-by-step guidance for legal processes
-- **Mixed**: Multiple intents in one query
-
-### Agent Routing
-
-Based on intent, the orchestrator routes to:
-
-1. **Research Agent** → RAG Engine → Vector DB + LLM
-2. **Draft Agent** → Research + Template Generation
-3. **Analysis Agent** → Deep case analysis
-4. **Procedure Agent** → Step-by-step guidance
-
-## 🔧 Configuration
-
-### Orchestrator vs Direct RAG
-
-You can toggle between orchestrated (intelligent) and direct RAG mode:
-
-```python
-# Orchestrated mode (default)
-use_orchestrator=True  # Intent classification + agent routing
-
-# Direct RAG mode
-use_orchestrator=False  # Bypass orchestrator, go straight to RAG
-```
-
-### Performance Tuning
-
-- **Semantic Cache**: 98% similarity threshold for instant responses
-- **Vector Search**: 40% similarity threshold, top 3 results
-- **LLM Temperature**: 0.3 for balanced creativity/precision
-
-## 📊 Monitoring
-
-### Logs
-
-The server provides detailed logging:
-
-```
-🎯 Orchestrator Mode: Processing query via multi-agent system
-🎯 Intent Classification: research (Complexity: simple)
-🔍 Activating Research Agent...
-📚 RAG Engine Active: True
-```
-
-### Health Checks
-
-```bash
-curl http://localhost:8000/health
-```
-
-## 🛠️ Development
-
-### Adding New Agents
-
-1. Create agent file in `agents/` directory
-2. Implement agent logic
-3. Register in `orchestrator.py`
-4. Add routing logic in `route_query()`
-
-### Testing
-
-```bash
-# Test orchestrator
-curl http://localhost:8000/api/test/orchestrator
-
-# Test research
-curl -X POST http://localhost:8000/api/research \
-  -H "Content-Type: application/json" \
-  -d '{"query": "What is Section 420 IPC?", "use_orchestrator": true}'
-```
-
-## 📝 Notes
-
-- The orchestrator uses Gemini 2.0 Flash for intent classification
-- RAG engine has semantic caching for frequently asked questions
-- All responses include thinking/reasoning for transparency
-- Widget system provides structured data for UI rendering
-
-## 🚨 Troubleshooting
-
-**Port 8000 already in use:**
-```bash
-./start.sh  # Automatically kills existing processes
-```
-
-**Missing environment variables:**
-Check `.env` file has all required keys
-
-**Orchestrator not active:**
-Verify `GOOGLE_API_KEY` is set correctly
-
-## 📚 Next Steps
-
-1. Implement more specialized agents
-2. Add authentication/authorization
-3. Implement rate limiting
-4. Add request caching
-5. Deploy to production
+<div align="center">
+  <br />
+  <h1>🏛️ NyayaFlow Backend</h1>
+  <p><b>The Multi-Agent Legal Intelligence Core</b></p>
+  <p>
+    <a href="#-key-features">Features</a> •
+    <a href="#-tech-stack">Stack</a> •
+    <a href="#-getting-started">Setup</a> •
+    <a href="#-architecture">Architecture</a>
+  </p>
+</div>
 
 ---
 
-**Version**: 2.0.0  
-**Last Updated**: 2026-01-07
+## 🌟 Overview
+
+The **NyayaFlow Backend** is a sophisticated legal intelligence engine powered by a **Multi-Agent Orchestrator** and a **Legal RAG (Retrieval-Augmented Generation)** pipeline. It serves as the "brain" for the NyayaFlow platform, transforming raw legal data into structured, empathetic, and actionable insights.
+
+> [!NOTE]
+> **Orchestration Excellence**: Unlike standard RAG systems, NyayaFlow uses an intelligent router to classify legal intent and dispatch queries to specialized agents (Statute Expert, Case Analyzer, Procedure Guide) ensuring the highest accuracy for both Advocates and Founders.
+
+---
+
+## ✨ Key Features
+
+### 🧠 Intelligent Legal Research (RAG)
+- **Multi-Agent Routing**: Automatically identifies if a user needs statutory explanation, case law analysis, or procedural guidance.
+- **Sprint 4 Safety Layer**: Dynamic risk assessment (High/Medium/Low) with confidence scoring, jurisdiction-specific warnings, and auto-generated "Lawyer Handoff" briefs.
+- **Legal NER & Extraction**: High-precision extraction of Courts, Statutes, and case entities using specialized Transformer models.
+
+### 🍱 Generative Intelligence
+- **Structured Response Schema**: Returns specific props for Generative UI widgets (Statute Cards, Penalty Alerts, Timelines).
+- **Magic Auto-Fill**: Extracts case entities (Amounts, Dates, Names) from chat conversations to pre-fill legal templates.
+- **Founder-Optimized Logic**: Automatically suppresses complex case law for non-lawyers while providing "Bottom Line" business impact summaries.
+
+### 🛡️ Safety & Reliability
+- **Citations First**: Every claim is grounded in retrieved PDF sources with zero-hallucination prompts.
+- **Semantic Cache**: Sub-200ms response times for frequently asked legal questions.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Core**: Python 3.13, FastAPI, Uvicorn (Async Processing).
+- **LLM & Embeddings**: Gemini 2.5 Flash (via LangChain), Google Text-Embeddings-004.
+- **Orchestration**: Custom LangChain-based Multi-Agent system.
+- **Vector Intelligence**: Supabase (pgvector) for production, ChromaDB for local development.
+- **NLP**: Spacy (`en_legal_ner_trf`) for legal entity recognition.
+- **Data Pipeline**: BeautifulSoup4 + Custom Scraper Service for real-time judgment retrieval.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.10+
+- Supabase Account (with pgvector enabled)
+- Google AI Studio API Key
+
+### Backend Setup
+1. **Clone & Virtual Env**:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+2. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   python -m spacy download en_legal_ner_trf
+   ```
+3. **Configure Environment**:
+   Create a `.env` file in the root:
+   ```env
+   GOOGLE_API_KEY=your_key
+   SUPABASE_URL=your_url
+   SUPABASE_SERVICE_KEY=your_key
+   ```
+4. **Launch Engine**:
+   ```bash
+   # Use the optimized startup script
+   ./start.sh 
+   
+   # Or run directly
+   python server.py
+   ```
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    UserQuery[User Query + Persona] --> Orchestrator[Multi-Agent Orchestrator]
+    Orchestrator --> IntentClassifier{Intent Classifier}
+    
+    IntentClassifier -->|Research| RAG[RAG Engine]
+    IntentClassifier -->|Drafting| DraftAgent[Drafting Agent]
+    IntentClassifier -->|Analysis| Analyzer[Case Analyzer]
+    
+    RAG --> SemanticCache{Semantic Cache}
+    SemanticCache -->|Hit| Response[Generate Response]
+    SemanticCache -->|Miss| VectorDB[(Supabase/pgvector)]
+    
+    VectorDB --> Reranker[Cross-Encoder Reranker]
+    Reranker --> NER[Legal NER Extraction]
+    NER --> Response
+    
+    Response --> SafetyLayer[Sprint 4 Safety Check]
+    SafetyLayer -->|Metadata| FinalJSON[Structured JSON Output]
+```
+
+---
+
+## 📡 API Endpoints
+
+- `POST /api/research` - Primary entry point for legal queries.
+- `POST /api/draft/generate` - Template-based document drafting.
+- `GET /api/agents/status` - Real-time status of the multi-agent network.
+
+---
+
+## 📜 License
+Internal Development - Copyright NyayaFlow 2026.
+
+<div align="center">
+  <p>Built with ❤️ for the Indian Legal Community</p>
+</div>
