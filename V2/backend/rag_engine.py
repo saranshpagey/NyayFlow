@@ -298,6 +298,14 @@ class LegalRAG:
 
             if cache_res.data:
                 cached_item = cache_res.data[0]
+                # Log cache hit (0 cost but tracked operation)
+                await usage_service.log_usage(
+                    query_type="cache_hit",
+                    model="cache",
+                    input_tokens=0,
+                    output_tokens=0
+                )
+
                 return [{
                     "id": "cache_hit",
                     "title": "Optimized Legal Insight",
@@ -334,6 +342,7 @@ class LegalRAG:
                    - **Recommended Action Plan**: Step-by-step next steps for the founder.
                 4. **Citations**: Include them subtly. Do NOT focus on procedural history or deep precedents.
                 5. **Widget Usage**: For high-impact advice, ALWAYS use the `startup_insight` widget in your JSON response.
+                6. **BNS/IPC Transition**: When citing criminal law, prioritize BNS (Bharatiya Nyaya Sanhita) over IPC. If the law has changed, explicitly highlight the BUSINESS IMPACT (e.g., "Penalty increased from 3 to 5 years" or "Now compoundable - you can settle"). Do NOT just mention section number changes.
                 """
             else:
                 persona_instructions = """
@@ -606,13 +615,17 @@ class LegalRAG:
             
             # Log usage for cost tracking
             try:
-                usage = response.response_metadata.get("token_usage", {})
-                await usage_service.log_usage(
-                    query_type="research",
-                    model="gemini-2.0-flash",
-                    input_tokens=usage.get("prompt_token_count", 0),
-                    output_tokens=usage.get("candidates_token_count", 0)
-                )
+                meta = response.response_metadata
+                # Try standard key (OpenAI style) or Google style
+                usage = meta.get("token_usage") or meta.get("usage_metadata") or {}
+                
+                if usage:
+                    await usage_service.log_usage(
+                        query_type="research",
+                        model="gemini-2.0-flash",
+                        input_tokens=usage.get("prompt_token_count", usage.get("input_tokens", 0)),
+                        output_tokens=usage.get("candidates_token_count", usage.get("output_tokens", 0))
+                    )
             except Exception as usage_err:
                 print(f"⚠️ Usage logging failed: {usage_err}")
 

@@ -57,6 +57,7 @@ async def main():
     
     targets = [
         ("https://indiankanoon.org/doc/1017213/", "The Trade Marks Act 1999"),
+        ("https://indiankanoon.org/doc/180352354/", "The Trade Marks Rules 2017"),
         ("https://indiankanoon.org/doc/161391573/", "The Limited Liability Partnership Act 2008"),
         ("https://indiankanoon.org/doc/1353758/", "The Companies Act 2013"), 
         ("https://indiankanoon.org/doc/789969/", "Income Tax Act - Section 56(2)(viib) (Angel Tax)"),
