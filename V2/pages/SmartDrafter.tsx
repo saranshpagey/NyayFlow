@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import PageTransition from '../components/PageTransition';
 import { legalTemplates, LegalTemplate } from '../lib/templates';
@@ -36,6 +37,8 @@ const SmartDrafter = () => {
     const [polishInstruction, setPolishInstruction] = useState('');
     const [isPolishing, setIsPolishing] = useState(false);
     const [printMode, setPrintMode] = useState(false);
+    const [searchParams] = useSearchParams();
+    const categoryFilter = searchParams.get('category');
 
     // Regex to find {{placeholders}}
     const PLACEHOLDER_REGEX = /{{(.*?)}}/g;
@@ -99,10 +102,12 @@ const SmartDrafter = () => {
         }
     };
 
-    const filteredTemplates = legalTemplates.filter(t =>
-        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredTemplates = legalTemplates.filter(t => {
+        const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            t.category.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = !categoryFilter || t.category === categoryFilter;
+        return matchesSearch && matchesCategory;
+    });
 
     const headerTitle = (
         <div className="flex items-center gap-4">

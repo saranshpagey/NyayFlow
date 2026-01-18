@@ -8,6 +8,7 @@ import {
     Folder,
     LayoutLeft as Layout,
     Database,
+    Coins,
     NavArrowDown
 } from 'iconoir-react';
 import { cn } from '../../lib/utils';
@@ -114,7 +115,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 to="/drafter"
                 icon={Edit}
                 label="Smart Drafter"
-                isActive={isActive('/drafter')}
+                isActive={isActive('/drafter') && location.search !== '?category=startup'}
                 colorClass="text-purple-600"
                 onClick={onCloseMobile}
             />
@@ -142,6 +143,29 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 colorClass="text-indigo-600"
                 onClick={onCloseMobile}
             />
+            <div className="pt-2 mt-2 border-t border-zinc-100 dark:border-zinc-800">
+                <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Founder Essentials</p>
+                <NavItem
+                    to="/drafter?category=startup"
+                    icon={Sparks}
+                    label="Startup Pack"
+                    isActive={location.search === '?category=startup'}
+                    colorClass="text-yellow-500"
+                    onClick={onCloseMobile}
+                />
+            </div>
+
+            <div className="pt-2 mt-2 border-t border-zinc-100 dark:border-zinc-800">
+                <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">FinOps</p>
+                <NavItem
+                    to="/finops"
+                    icon={Coins}
+                    label="Cost Tracker"
+                    isActive={isActive('/finops')}
+                    colorClass="text-emerald-500"
+                    onClick={onCloseMobile}
+                />
+            </div>
         </nav>
     );
 };

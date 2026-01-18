@@ -1,6 +1,8 @@
 import os
 import re
 import json
+from agents.entity_extractor import entity_extractor
+from services.usage_service import usage_service
 from supabase.client import create_client
 from typing import List
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
@@ -198,82 +200,118 @@ class LegalRAG:
         print(f"✅ Restructured response: answer={len(restructured['answer'])} chars, widget={restructured['widget'] is not None}")
         return restructured
 
+    async def get_retrieved_context(self, query: str, history: List[dict] = None, match_count: int = 3, persona: str = "advocate"):
+        """Retrieve relevant legal context without generating an answer (Cost Optimized)."""
+        if not self.active:
+            return "", []
+
+        try:
+            # 1. Query Refinement (Only for very long queries)
+            search_query = query
+            if len(query.split()) > 40:
+                print("📝 Long query detected. Refining for search...")
+                refine_prompt = f"Summarize the core legal search intent (1-3 keywords) for: {query}"
+                refined_res = await self.llm.ainvoke(refine_prompt)
+                search_query = refined_res.content.strip()
+            elif history and len(query.split()) < 5:
+                context_summary = history[-1]['content'][:100]
+                search_query = f"{query} {context_summary}"
+
+            # 2. Embedding & Search
+            query_embedding = self.embeddings_model.embed_query(search_query)
+            
+            # Transition detection
+            transition_context = ""
+            try:
+                ipc_match = re.search(r'IPC\s*(?:Section|Sec\.?|§)?\s*(\d+[A-Z]?)', query, re.I)
+                bns_match = re.search(r'BNS\s*(?:Section|Sec\.?|§)?\s*(\d+)', query, re.I)
+                mapping_path = os.path.join(os.path.dirname(__file__), "data/ipc_to_bns.json")
+                if os.path.exists(mapping_path):
+                    with open(mapping_path, 'r') as f:
+                        mapping = json.load(f)
+                        if ipc_match:
+                            ipc_sec = ipc_match.group(1)
+                            bns_info = mapping.get(ipc_sec)
+                            if bns_info:
+                                transition_context = f"\n[TRANSITION NOTE]: IPC Section {ipc_sec} -> BNS Correlation: {bns_info}\n"
+                        elif bns_match:
+                            bns_sec = bns_match.group(1)
+                            for ipc, bns_info in mapping.items():
+                                if f"{bns_sec} " in bns_info or bns_info.startswith(f"{bns_sec}("):
+                                    transition_context = f"\n[TRANSITION NOTE]: BNS Section {bns_sec} -> IPC Section {ipc}. Context: {bns_info}\n"
+                                    break
+            except: pass
+
+            res = self.supabase_client.rpc(
+                "match_documents",
+                {
+                    "query_embedding": query_embedding,
+                    "match_threshold": 0.4, 
+                    "match_count": match_count
+                }
+            ).execute()
+            
+            processed_contents = []
+            retrieved_sources = []
+            if transition_context:
+                processed_contents.append(transition_context)
+                retrieved_sources.append({"title": "Transition Note", "citation": "BNS-IPC Map", "type": "Statute"})
+            
+            if res.data:
+                for d in res.data:
+                    content = d.get('content', '')
+                    meta = d.get('metadata', {})
+                    source_info = {
+                        "title": meta.get('title', 'Legal Document'),
+                        "citation": meta.get('citation', 'N/A'),
+                        "type": meta.get('type', 'Unknown'),
+                        "url": meta.get('url') or meta.get('file_path')
+                    }
+                    retrieved_sources.append(source_info)
+                    processed_contents.append(f"Source ({source_info['citation']}):\n{content}")
+            
+            context_text = "\n\n".join(processed_contents)
+            if len(context_text.split()) > 3000:
+                context_text = " ".join(context_text.split()[:3000])
+                
+            return context_text if context_text else "No direct case law found.", retrieved_sources
+
+        except Exception as e:
+            print(f"⚠️ Context retrieval error: {e}")
+            return "", []
+
     async def analyze_query(self, query: str, history: List[dict] = None, match_count: int = 3, persona: str = "advocate"):
         """Perform RAG: Retrieve and generate DECISIVE human-like answers."""
         if not self.active:
             return []
 
-        history_text = "N/A"
-        if history:
-            history_text = "\n".join([f"{msg['role'].upper()}: {msg['content']}" for msg in history[-5:]])
-
         try:
-            # 0. Query Refinement for speed
-            search_query = query
-            if len(query.split()) > 15:
-                print("📝 Complex query detected. Refining for search...")
-                refine_prompt = f"Summarize the core legal search intent (1-3 keywords) for: {query}"
-                refined_res = await self.llm.ainvoke(refine_prompt)
-                search_query = refined_res.content.strip()
-                print(f"✨ Refined Search Intent: {search_query}")
-            elif history and len(query.split()) < 5:
-                # Follow-up augmentation
-                context_summary = history[-1]['content'][:100]
-                search_query = f"{query} {context_summary}"
-
             # 1. Semantic Cache Check
-            print(f"🧠 Checking Semantic Cache for: {search_query}")
+            search_query = query
             query_embedding = self.embeddings_model.embed_query(search_query)
             
-            # --- statutory transition detection ---
-            transition_context = ""
-            try:
-                # Detect IPC or BNS section mentions
-                ipc_match = re.search(r'IPC\s*(?:Section|Sec\.?|§)?\s*(\d+[A-Z]?)', query, re.I)
-                bns_match = re.search(r'BNS\s*(?:Section|Sec\.?|§)?\s*(\d+)', query, re.I)
-                
-                mapping_path = os.path.join(os.path.dirname(__file__), "data/ipc_to_bns.json")
-                if os.path.exists(mapping_path):
-                    with open(mapping_path, 'r') as f:
-                        mapping = json.load(f)
-                        
-                        if ipc_match:
-                            ipc_sec = ipc_match.group(1)
-                            bns_info = mapping.get(ipc_sec)
-                            if bns_info:
-                                transition_context = f"\n[TRANSITION NOTE]: IPC Section {ipc_sec} has been replaced by Bharatiya Nyaya Sanhita (BNS). Correlation: {bns_info}\n"
-                                print(f"🔗 Transition detected: IPC {ipc_sec} -> BNS")
-                        
-                        elif bns_match:
-                            bns_sec = bns_match.group(1)
-                            # Find which IPC section mapped to this BNS
-                            for ipc, bns_info in mapping.items():
-                                if f"{bns_sec} " in bns_info or bns_info.startswith(f"{bns_sec}("):
-                                    transition_context = f"\n[TRANSITION NOTE]: BNS Section {bns_sec} corresponds to the old IPC Section {ipc}. Context: {bns_info}\n"
-                                    print(f"🔗 Transition detected: BNS {bns_sec} -> IPC {ipc}")
-                                    break
-            except Exception as e:
-                print(f"⚠️ Transition lookup error: {e}")
-
-            cache_res = self.supabase_client.rpc(
-                "match_cache",
-                {
-                    "query_embedding": query_embedding,
-                    "match_threshold": 0.98, 
-                    "match_count": 1,
-                }
-            ).execute()
+            cache_res = self.supabase_client.rpc("match_cache", {
+                "query_embedding": query_embedding,
+                "match_threshold": 0.98, 
+                "match_count": 1,
+            }).execute()
 
             if cache_res.data:
-                print("⚡ Cache Hit!")
                 cached_item = cache_res.data[0]
+                # Log cache hit (0 cost but tracked operation)
+                await usage_service.log_usage(
+                    query_type="cache_hit",
+                    model="cache",
+                    input_tokens=0,
+                    output_tokens=0
+                )
+
                 return [{
                     "id": "cache_hit",
                     "title": "Optimized Legal Insight",
                     "court": "NyayaFlow Memory",
                     "date": "2024",
                     "citation": "N/A",
-                    "snippet": "Instant retrieval from semantic cache.",
                     "status": "good_law",
                     "summary": cached_item['response_json'].get("answer"),
                     "thinking": cached_item['response_json'].get("thinking"),
@@ -281,50 +319,14 @@ class LegalRAG:
                     "entities": []
                 }]
 
-            # 2. Retrieval: Optimized search
-            print(f"🔍 Searching Vector DB for: {search_query}")
-            res = self.supabase_client.rpc(
-                "match_documents",
-                {
-                    "query_embedding": query_embedding,
-                    "match_threshold": 0.4, 
-                    "match_count": match_count,
-                    "filter": {"source_type_ne": "judgment"} if persona == "founder" and match_count < 8 else {}  # Suppression Logic
-                }
-            ).execute()
+            # 2. Optimized Retrieval
+            print(f"🔍 Retrieval Phase...")
+            context_text, retrieved_sources = await self.get_retrieved_context(query, history, match_count, persona)
             
-            docs = res.data
-            retrieved_sources = []
-            processed_contents = []
-
-            # Inject transition context as a priority pseudo-source
-            if transition_context:
-                processed_contents.append(f"Statutory Transition Note:\n{transition_context}")
-                retrieved_sources.append({
-                    "title": "BNS-IPC Transition Note",
-                    "citation": "Correlation Table",
-                    "type": "Transition",
-                    "url": "N/A"
-                })
-            
-            if docs:
-                for d in docs: 
-                    content = d.get('content', '')
-                    meta = d.get('metadata', {})
-                    url = meta.get('url') or meta.get('file_path')
-                    
-                    # Add to sources
-                    source_info = {
-                        "title": meta.get('title', 'Legal Document'),
-                        "citation": meta.get('citation', 'N/A'),
-                        "type": meta.get('type', 'Unknown'),
-                        "url": url
-                    }
-                    retrieved_sources.append(source_info)
-
-                    processed_contents.append(f"Source ({source_info['citation']}):\n{content}")
-            
-            context_text = "\n\n".join(processed_contents) if processed_contents else "No direct case law found in database. Relying on legal principles."
+            # Use original history extraction for prompt
+            history_text = "N/A"
+            if history:
+                history_text = "\n".join([f"{msg['role'].upper()}: {msg['content']}" for msg in history[-5:]])
             
             # 3. Gemini Generation (STRICT DECISIVE MODE)
             
@@ -333,15 +335,14 @@ class LegalRAG:
                 persona_instructions = """
                 CORE PERSONA: 'Founder Mode' Legal Navigator.
                 1. **Goal**: Provide STRATEGIC, BUSINESS-FOCUSED intelligence. Founders don't want "case law summaries" - they want exact actionable advice.
-                2. **Response Format**: Use clear markdown with sections:
-                   - For COMPARISON queries (e.g., "LLP vs Pvt Ltd"): Use comparison tables with clear headers
-                   - Start with a brief summary paragraph
-                   - Use markdown tables for side-by-side comparisons
-                   - Add "Key Differences" section with bullet points
-                   - Include "Recommendation" section with actionable advice
-                3. **Tone**: Authoritative, decisive, low-jargon to no-jargon.
-                4. **Citations**: Include them in context but don't overwhelm.
-                5. **Structure**: Use headers (###), bullet points, and tables for maximum clarity.
+                2. **Zero-Jargon Policy**: Explain every legal term in plain English. Use a "What this means" section if complex concepts appear.
+                3. **Response Format**: Use clear markdown with these mandatory sections:
+                   - **Bottom Line**: A 1-2 sentence executive summary.
+                   - **The Analysis**: Comparison tables or structured facts.
+                   - **Recommended Action Plan**: Step-by-step next steps for the founder.
+                4. **Citations**: Include them subtly. Do NOT focus on procedural history or deep precedents.
+                5. **Widget Usage**: For high-impact advice, ALWAYS use the `startup_insight` widget in your JSON response.
+                6. **BNS/IPC Transition**: When citing criminal law, prioritize BNS (Bharatiya Nyaya Sanhita) over IPC. If the law has changed, explicitly highlight the BUSINESS IMPACT (e.g., "Penalty increased from 3 to 5 years" or "Now compoundable - you can settle"). Do NOT just mention section number changes.
                 """
             else:
                 persona_instructions = """
@@ -363,13 +364,24 @@ class LegalRAG:
                     "widget": null
                 }
                 
-                EXAMPLE 2 - Founder Simple Query:
-                USER: "Do I need GST registration?"
+                EXAMPLE 2 - Founder Compliance Query:
+                USER: "What are the rules for issuing shares to founders in a new company?"
                 
                 ASSISTANT: {
-                    "thinking": "User needs to know GST registration requirements. I'll provide clear criteria.",
-                    "answer": "### GST Registration Requirements\n\n**Yes, you need GST registration if:**\n\n- Your annual turnover exceeds Rs. 40 lakhs (Rs. 20 lakhs for services)\n- You're selling goods/services across state borders (interstate)\n- You're selling on e-commerce platforms like Amazon, Flipkart\n\n**No registration needed if:**\n\n- Your turnover is below the threshold\n- You only provide exempt services (education, healthcare)\n\n### Next Steps\n\n1. Calculate your expected annual turnover\n2. If above threshold, register within 30 days\n3. File monthly/quarterly returns\n\n### Legal Basis\n\nCentral Goods and Services Tax Act, 2017 - Section 22 (Threshold Limits)",
-                    "widget": null
+                    "thinking": "User needs info on share issuance under Companies Act. I'll explain Section 42/62 simply and provide an action plan.",
+                    "answer": "### Issuing Shares in Your New Company\n\n**Bottom Line**: Shares can be issued during incorporation or later through a 'Rights Issue' or 'Preferential Allotment'. For new startups, issuing 'Equity Shares' is the most common path.\n\n### What this means\nWhen you 'issue shares', you are giving a percentage of ownership in exchange for capital (money) or services (sweat equity). This must be recorded in the Company's 'Register of Members'.\n\n### Key Rules (Section 62, Companies Act)\n- **Rights Issue**: Existing shareholders (including founders) have the first right to buy new shares.\n- **Board Approval**: Any issuance must be approved by the Board of Directors.\n- **ROC Filing**: You must file form **PAS-3** with the Registrar of Companies within 30 days of allotment.\n\n### Recommended Action Plan\n1. **Draft a Board Resolution**: Formally approve the number of shares and price.\n2. **Issue Share Certificates**: Provide physical/digital proof of ownership to each founder.\n3. **Pay Stamp Duty**: Ensure you pay the required stamp duty on share certificates (varies by state).\n4. **File PAS-3**: Submit the allotment details to the MCA portal.",
+                    "widget": {
+                        "type": "startup_insight",
+                        "data": {
+                            "summary": "Share issuance requires Board approval, ROC filing (PAS-3), and payment of stamp duty on certificates.",
+                            "recommendations": [
+                                "Keep a clean 'Register of Members' from Day 1",
+                                "Don't skip the PAS-3 filing (30-day deadline)",
+                                "Consult a CS for stamp duty calculations"
+                            ],
+                            "riskLevel": "green"
+                        }
+                    }
                 }
                 """
             else:
@@ -499,7 +511,7 @@ class LegalRAG:
             Output...
             
             PREVIOUS CONTEXT: \"\"\"{history_text}\"\"\"
-            RETRIEVED INFO: \"\"\"{context_text}\n{transition_context}\"\"\"
+            RETRIEVED INFO: \"\"\"{context_text}\"\"\"
             USER QUERY: \"\"\"{query}\"\"\"
             
             ═══════════════════════════════════════════════════════════════════════════
@@ -525,7 +537,8 @@ class LegalRAG:
             {{
                 "title": "Act Name",
                 "section": "Section Number",
-                "description": "Brief description"
+                "description": "Brief description",
+                "cross_reference": "IPC Section Equivalent (if BNS) or BNS Section Equivalent (if IPC)"
             }}
             
             TYPE: "penalty"
@@ -599,6 +612,23 @@ class LegalRAG:
 
             print("🤖 Generation Phase...")
             response = await self.llm.ainvoke(prompt)
+            
+            # Log usage for cost tracking
+            try:
+                meta = response.response_metadata
+                # Try standard key (OpenAI style) or Google style
+                usage = meta.get("token_usage") or meta.get("usage_metadata") or {}
+                
+                if usage:
+                    await usage_service.log_usage(
+                        query_type="research",
+                        model="gemini-2.0-flash",
+                        input_tokens=usage.get("prompt_token_count", usage.get("input_tokens", 0)),
+                        output_tokens=usage.get("candidates_token_count", usage.get("output_tokens", 0))
+                    )
+            except Exception as usage_err:
+                print(f"⚠️ Usage logging failed: {usage_err}")
+
             raw_content = response.content
             
             # JSON Parsing Logic
@@ -744,6 +774,18 @@ class LegalRAG:
         
         try:
             response = await self.llm.ainvoke(prompt)
+            
+            # Log usage for drafting polish
+            try:
+                usage = response.response_metadata.get("token_usage", {})
+                await usage_service.log_usage(
+                    query_type="draft_polish",
+                    model="gemini-2.0-flash",
+                    input_tokens=usage.get("prompt_token_count", 0),
+                    output_tokens=usage.get("candidates_token_count", 0)
+                )
+            except: pass
+
             return response.content.strip()
         except Exception as e:
             print(f"❌ Polish Error: {e}")

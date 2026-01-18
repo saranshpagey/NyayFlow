@@ -12,10 +12,12 @@ from enum import Enum
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from agents.case_analyzer import CaseAnalyzerAgent
+from services.usage_service import usage_service
 from agents.statute_expert import StatuteExpertAgent
 from agents.procedure_guide import ProcedureGuideAgent
 from agents.glossary_agent import GlossaryAgent
 from agents.caselaw_agent import CaseLawAgent
+from services.trademark_checker import trademark_checker
 
 load_dotenv()
 
@@ -174,15 +176,15 @@ class LegalAgentOrchestrator:
                 ]
             }
         
-        # PRIORITY 4: Procedure Detection
-        if any(word in query_lower for word in ["how to file", "procedure", "steps for", "process of"]):
-             print("🚀 Fast Path: Procedure Intent detected via Heuristics (Priority 4)")
+        # PRIORITY 4: Procedure & Filing Detection
+        if any(word in query_lower for word in ["how to file", "procedure", "steps for", "process of", "filing", "checklist", "requirements", "documents needed"]):
+             print("🚀 Fast Path: PROCEDURE Intent detected via Heuristics (Priority 4)")
              return {
                  "primary_intent": Intent.PROCEDURE.value, 
                  "complexity": "simple",
                  "strategic_plan": [
                      "Mapping out the exact procedural steps...",
-                     "Checking latest filing requirements...",
+                     "Checking latest filing and document requirements...",
                      "Compiling your step-by-step guide..."
                  ]
              }
@@ -216,6 +218,9 @@ class LegalAgentOrchestrator:
                  }
         
         # PRIORITY 7: Founder-Specific Intent Detection
+        if not query_lower:
+             query_lower = query.lower()
+
         # Compliance
         compliance_keywords = ["do i need", "am i required", "is it mandatory", "compliance", 
                               "registration", "license", "gst", "tax obligation", "filing requirement"]
@@ -230,9 +235,10 @@ class LegalAgentOrchestrator:
             print("🚀 Fast Path: FOUNDER_HIRING Intent detected")
             return {"primary_intent": Intent.FOUNDER_HIRING.value, "complexity": "moderate"}
         
-        # Intellectual Property
+        # Intellectual Property & Name Availability
         ip_keywords = ["trademark", "copyright", "patent", "logo", "brand name", 
-                      "intellectual property", "ip protection", "protect my brand"]
+                      "intellectual property", "ip protection", "protect my brand",
+                      "available", "name conflict", "is the name"]
         if any(kw in query_lower for kw in ip_keywords):
             print("🚀 Fast Path: FOUNDER_IP Intent detected")
             return {"primary_intent": Intent.FOUNDER_IP.value, "complexity": "moderate"}
@@ -311,6 +317,18 @@ Respond ONLY with valid JSON."""
 
         try:
             response = await self.router_llm.ainvoke(classification_prompt)
+            
+            # Log usage for intent classification
+            try:
+                usage = response.response_metadata.get("token_usage", {})
+                await usage_service.log_usage(
+                    query_type="orchestration_routing",
+                    model="gemini-2.0-flash",
+                    input_tokens=usage.get("prompt_token_count", 0),
+                    output_tokens=usage.get("candidates_token_count", 0)
+                )
+            except: pass
+
             json_match = re.search(r'\{.*\}', response.content, re.DOTALL)
             
             if json_match:
@@ -351,6 +369,7 @@ Respond ONLY with valid JSON."""
             }
         
         # Step 1: Classify Intent
+        query_lower = query.lower()
         intent_data = await self.classify_intent(query, history)
         primary_intent = intent_data.get("primary_intent", "research")
         
@@ -491,25 +510,49 @@ Respond ONLY with valid JSON."""
                     }
                 })
         
-        # Founder-Specific Intent Routing
-        elif primary_intent in [Intent.FOUNDER_COMPLIANCE.value, Intent.FOUNDER_HIRING.value, 
-                                Intent.FOUNDER_IP.value, Intent.FOUNDER_CONTRACTS.value, 
-                                Intent.FOUNDER_INCORPORATION.value]:
-            # Route founder queries through RAG with enhanced context
-            from rag_engine import rag_engine
-            results = await rag_engine.analyze_query(query, history, persona="founder")
-            
-            response = {
-                "success": True,
-                "intent": intent_data,
-                "agent_used": f"founder_{primary_intent.split('_')[1]}_advisor",
-                "results": results,
-                "metadata": {
-                    "founder_category": primary_intent.split('_')[1],
-                    "specialized_handling": True
+        elif primary_intent == Intent.FOUNDER_IP.value:
+            # Special handling for Trademark/Name Risk Checks
+            if any(w in query_lower for w in ["available", "conflict", "is the name", "name"]):
+                # Extract proposed name (heuristic: last 2-3 words or words in quotes)
+                proposed_name = query
+                quotes_match = re.search(r'["\'](.*?)["\']', query)
+                if quotes_match:
+                    proposed_name = quotes_match.group(1)
+                
+                risk_data = await trademark_checker.check_name_risk(proposed_name)
+                
+                results = [{
+                    "id": "name_risk_check",
+                    "title": f"Risk Assessment for '{proposed_name}'",
+                    "court": "Trademark Service",
+                    "date": "2024",
+                    "citation": "Statutory Check",
+                    "status": "caution_law" if risk_data["risk_level"] != "green" else "good_law",
+                    "summary": risk_data["recommendation"],
+                    "thinking": f"Performed fuzzy search across Trade Marks Act and ingested corporate data for '{proposed_name}'.",
+                    "widget": {
+                        "type": "name_risk",
+                        "data": risk_data
+                    }
+                }]
+                response = {
+                    "success": True,
+                    "intent": intent_data,
+                    "agent_used": "trademark_advisor",
+                    "results": results
                 }
-            }
-            agents_used = ["FounderAdvisor", "ResearchAgent"]
+                agents_used = ["TrademarkChecker", "ResearchAgent"]
+            else:
+                # Regular IP research
+                from rag_engine import rag_engine
+                results = await rag_engine.analyze_query(query, history, persona="founder")
+                response = {
+                    "success": True,
+                    "intent": intent_data,
+                    "agent_used": "founder_ip_advisor",
+                    "results": results
+                }
+                agents_used = ["FounderAdvisor", "ResearchAgent"]
             
             if response.get("success") and response.get("results"):
                 response["results"].append({
@@ -640,9 +683,9 @@ Respond ONLY with valid JSON."""
         doc_type = doc_types[0] if doc_types else "legal document"
         
         
-        # First, do research if needed
+        # First, do research if needed (Decoupled retrieval for cost optimization)
         from rag_engine import rag_engine
-        research_results = await rag_engine.analyze_query(
+        research_context, retrieved_sources = await rag_engine.get_retrieved_context(
             f"Legal requirements and format for {doc_type} in India",
             history,
             persona=persona
@@ -667,7 +710,7 @@ TASK: Generata a structured draft template for a {doc_type}.
 USER REQUEST: "{query}"
 
 LEGAL RESEARCH CONTEXT:
-{research_results[0].get('summary', '') if research_results else 'No specific precedents found'}
+{research_context if research_context else 'No specific precedents found'}
 
 INSTRUCTIONS:
 1. Create a COMPLETE draft template using Jinja2-style placeholders: {{variable_name}}
@@ -729,11 +772,13 @@ Respond in JSON format:
         except Exception as e:
             print(f"❌ Draft generation error: {e}")
         
-        # Fallback to RAG
+        # Fallback to standard research if generation fails
+        from rag_engine import rag_engine
+        research_results = await rag_engine.analyze_query(query, history, persona=persona)
         return {
             "success": True,
             "intent": intent_data,
-            "agent_used": "research_agent",
+            "agent_used": "research_agent_fallback",
             "results": research_results
         }
     
@@ -750,6 +795,12 @@ Respond in JSON format:
         
         # For now, delegate to RAG which handles mixed intents well
         from rag_engine import rag_engine
+        # Multi-agent coordination often needs rich context first
+        from rag_engine import rag_engine
+        research_context, retrieved_sources = await rag_engine.get_retrieved_context(query, history, persona=persona)
+        
+        # Then delegate to RAG for full answer generation (using the context)
+        # Note: analyze_query already does retrieval, so this is just a context check
         results = await rag_engine.analyze_query(query, history, persona=persona)
         
         return {

@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+"use client";
+
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useLayout } from '../context/LayoutContext';
 import { SystemRestart } from 'iconoir-react';
 import LoadingSkeleton from '../components/ui/LoadingSkeleton';
@@ -36,6 +38,8 @@ import { jsPDF } from 'jspdf';
 
 // Modular Widgets
 import { TimelineWidget } from '../components/widgets/TimelineWidget';
+import { StartUpInsightWidget } from '../components/widgets/StartUpInsightWidget';
+import { NameRiskWidget } from '../components/widgets/NameRiskWidget';
 import { StatuteWidget } from '../components/widgets/StatuteWidget';
 import { PenaltyWidget } from '../components/widgets/PenaltyWidget';
 import { ProcedureWidget } from '../components/widgets/ProcedureWidget';
@@ -58,6 +62,7 @@ import { DraftPreviewPanel } from '../components/DraftPreviewPanel';
 import { DraftChatPanel } from '../components/DraftChatPanel';
 import { DraftVariable, DraftWidgetData } from '../lib/types';
 import { DeepDiveModal } from '../components/modals/DeepDiveModal';
+import { ExportBriefModal } from '../components/modals/ExportBriefModal';
 import { ThinkingStep } from '../components/ThinkingStep';
 import { ResearchHome } from '../components/research/ResearchHome';
 
@@ -89,9 +94,9 @@ const getThinkingTime = (content: string) => {
 
 const ThinkingProcess = ({ msg, onSourceClick }: { msg: any, onSourceClick: (source: any) => void }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const duration = React.useMemo(() => getThinkingTime(msg.content), [msg.content]);
+    const duration = useMemo(() => getThinkingTime(msg.content), [msg.content]);
 
-    const validSources = React.useMemo(() => (msg.results || []).filter((r: any) =>
+    const validSources = useMemo(() => (msg.results || []).filter((r: any) =>
         r.type !== 'agent_status' &&
         r.id !== 'orchestrator' &&
         r.id !== 'agent_status_info' &&
@@ -348,7 +353,7 @@ const Research = () => {
             }, 3000);
         }
         return () => clearInterval(interval);
-    }, [isLoading]);
+    }, [isLoading, searchStatuses.length]);
 
     // Reset panel state on session change
     // Reset panel state on session change
@@ -537,7 +542,7 @@ const Research = () => {
                 thinking: primaryResult?.thinking,
                 widget: primaryResult?.widget,
                 results: data,
-                metadata: response.metadata // Pass safety metadata
+                metadata: response.metadata as any // Pass safety metadata
             };
             addMessage(aiMsg, targetSessionId);
             messageSent = true;
@@ -658,6 +663,8 @@ const Research = () => {
                     onDownload={() => handleDownloadPDF(widget.data)}
                 />
             );
+            case 'startup_insight': return <StartUpInsightWidget data={widget.data} />;
+            case 'name_risk': return <NameRiskWidget data={widget.data} />;
             default: return null;
         }
     };
@@ -706,7 +713,6 @@ const Research = () => {
 
     const headerRight = (
         <div className="flex items-center gap-3">
-            {/* Guest Progress */}
             {/* Guest Progress */}
             {!user && (
                 <div className="flex items-center gap-2">

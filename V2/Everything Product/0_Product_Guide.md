@@ -262,10 +262,14 @@ Unlike generic AI tools (ChatGPT, Claude):
 
 ## 🚀 Current Capabilities (As of January 2026)
 
-### ✅ **Fully Functional**
-- **Multi-agent Orchestration**: Case Analyzer, Statute Expert, Procedure Guide
+### ✅ Fully Functional
+- **Multi-agent Orchestration**: Case Analyzer, Statute Expert, Procedure Guide + *New Routing Logic*
 - **Semantic Legal Research**: Citation-grounded answers with "Thinking Process"
 - **Founder Mode Experience** (NEW): Plain-English Q&A, Risk Badges, and "Explain Simply" toggle
+- **Verified Statutory Knowledge** (NEW): Deep database of Companies Act 2013, Angel Tax, & DPDP Act
+- **Interactive Widgets** (NEW):
+    - `StartUp Insight Widget`: Executive summaries with RLHF feedback loops
+    - `Name Risk Widget`: Trademark checks with Nice Class prediction
 - **Startup Toolkit** (NEW): Ready-to-use templates for NDAs, Founder Agreements, Offer Letters
 - **Guided Drafting** (NEW): Question-based inputs for non-lawyers with "Magic Auto-Fill"
 - **Risk Intelligence**: "Consult Lawyer" triggers for high-liability documents

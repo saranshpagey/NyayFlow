@@ -60,8 +60,9 @@ The application follows a **"Hub & Spoke"** architecture designed for rapid acce
 **Purpose**: A specialized IDE (Integrated Development Environment) for legal documents.
 
 *   **Template Library**:
-    *   Categorized: Courts (HC/SC/District), Civil, Criminal, Corporate.
-    *   Searchable: "Bail Application", "Rent Agreement".
+    *   Categorized: Courts (HC/SC/District), Civil, Criminal, Corporate, **Startup Pack (Sprint 5)**.
+    *   Searchable: "Bail Application", "Rent Agreement", "Mutual NDA".
+    *   **Founder Essentials**: Dedicated section with Mutual NDA, Co-Founder Agreement, Consultant Agreement, Offer Letter.
 *   **Editor Workspace**:
     *   **Left Pane (Inputs)**: Smart forms for structured data (Client Name, Respondent, Dates).
     *   **Right Pane (Preview)**: Real-time A4/Legal paper preview of the document.
