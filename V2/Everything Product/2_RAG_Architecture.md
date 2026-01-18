@@ -152,6 +152,24 @@ Every chunk of text stored in the Vector DB carries rich metadata for filtering:
     *   **Output**: JSON with extracted fields, confidence score, and missing field list
     *   **Example**: Conversation mentions "bounced cheque for ₹50,000" → Extracts `chequeAmount: "Rs. 50,000/-"`
 
+5.  **TrademarkCheckerService** (Sprint 5):
+    *   **Purpose**: Instant business name risk assessment with trademark conflict detection
+    *   **Features**:
+        - Semantic + fuzzy search against Trade Marks Act database
+        - Nice Classification prediction (e.g., "Software" → Class 9)
+        - Risk scoring algorithm (0-100 scale)
+        - Phonetic similarity detection
+    *   **Output**: `NameRiskWidget` with visual gauge, conflict list, and recommendations
+
+6.  **FounderInsightGenerator** (Sprint 5):
+    *   **Purpose**: Executive summaries for startup compliance queries
+    *   **Features**:
+        - "Bottom Line" 1-sentence summary
+        - Numbered action plan with next steps
+        - Risk level indicator (Green/Yellow/Red)
+        - RLHF feedback buttons for continuous improvement
+    *   **Output**: `StartUpInsightWidget` with summary, action plan, and risk badge
+
 ---
 
 ## 🔄 Advanced Features
