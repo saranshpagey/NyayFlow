@@ -320,14 +320,20 @@ Respond ONLY with valid JSON."""
             
             # Log usage for intent classification
             try:
-                usage = response.response_metadata.get("token_usage", {})
+                # Modern LangChain uses usage_metadata attribute
+                usage = getattr(response, "usage_metadata", {})
+                if not usage:
+                    # Fallback to response_metadata if needed
+                    usage = response.response_metadata.get("token_usage", {})
+                
                 await usage_service.log_usage(
                     query_type="orchestration_routing",
                     model="gemini-2.0-flash",
-                    input_tokens=usage.get("prompt_token_count", 0),
-                    output_tokens=usage.get("candidates_token_count", 0)
+                    input_tokens=usage.get("input_tokens", usage.get("prompt_token_count", 0)),
+                    output_tokens=usage.get("output_tokens", usage.get("candidates_token_count", 0))
                 )
-            except: pass
+            except Exception as e:
+                print(f"⚠️ Orchestrator usage logging failed: {e}")
 
             json_match = re.search(r'\{.*\}', response.content, re.DOTALL)
             

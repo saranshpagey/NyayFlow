@@ -62,7 +62,7 @@ export const StartUpInsightWidget: React.FC<StartUpInsightWidgetProps> = ({ data
                     </div>
                     <h3 className="text-sm font-semibold text-zinc-900 dark:text-white leading-none">Startup Strategy Insight</h3>
                 </div>
-                <div className={cn("px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5", config.bgColor, config.color)}>
+                <div className={cn("px-2.5 py-1 rounded-full text-xxs font-bold uppercase tracking-wider flex items-center gap-1.5", config.bgColor, config.color)}>
                     <config.icon className="w-3 h-3" />
                     {config.label}
                 </div>
@@ -71,7 +71,7 @@ export const StartUpInsightWidget: React.FC<StartUpInsightWidgetProps> = ({ data
             <div className="p-6">
                 {/* Summary Section */}
                 <div className="mb-6">
-                    <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">The Bottom Line</h4>
+                    <h4 className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-3">The Bottom Line</h4>
                     <p className="text-lg font-display font-medium text-zinc-900 dark:text-white leading-tight">
                         {summary}
                     </p>
@@ -80,7 +80,7 @@ export const StartUpInsightWidget: React.FC<StartUpInsightWidgetProps> = ({ data
                 {/* Action Plan Section */}
                 {actionPlan && actionPlan.length > 0 && (
                     <div className="space-y-4">
-                        <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1 flex items-center gap-2">
+                        <h4 className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-1 flex items-center gap-2">
                             <List className="w-3 h-3" /> Recommended Action Plan
                         </h4>
                         <div className="space-y-2">
@@ -92,7 +92,7 @@ export const StartUpInsightWidget: React.FC<StartUpInsightWidgetProps> = ({ data
                                     transition={{ delay: 0.1 * idx }}
                                     className="flex items-start gap-4 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 hover:border-blue-200 dark:hover:border-blue-900/30 transition-colors"
                                 >
-                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-[10px] font-bold text-zinc-500 shadow-sm">
+                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-xxs font-bold text-zinc-500 shadow-sm">
                                         {idx + 1}
                                     </div>
                                     <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-snug pt-0.5">

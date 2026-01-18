@@ -615,16 +615,19 @@ class LegalRAG:
             
             # Log usage for cost tracking
             try:
-                meta = response.response_metadata
-                # Try standard key (OpenAI style) or Google style
-                usage = meta.get("token_usage") or meta.get("usage_metadata") or {}
+                # Modern LangChain uses usage_metadata attribute
+                usage = getattr(response, "usage_metadata", {})
+                if not usage:
+                    # Fallback to response_metadata
+                    meta = response.response_metadata
+                    usage = meta.get("token_usage") or meta.get("usage_metadata") or {}
                 
                 if usage:
                     await usage_service.log_usage(
                         query_type="research",
                         model="gemini-2.0-flash",
-                        input_tokens=usage.get("prompt_token_count", usage.get("input_tokens", 0)),
-                        output_tokens=usage.get("candidates_token_count", usage.get("output_tokens", 0))
+                        input_tokens=usage.get("input_tokens", usage.get("prompt_token_count", 0)),
+                        output_tokens=usage.get("output_tokens", usage.get("candidates_token_count", 0))
                     )
             except Exception as usage_err:
                 print(f"⚠️ Usage logging failed: {usage_err}")
@@ -777,14 +780,20 @@ class LegalRAG:
             
             # Log usage for drafting polish
             try:
-                usage = response.response_metadata.get("token_usage", {})
+                # Modern LangChain uses usage_metadata attribute
+                usage = getattr(response, "usage_metadata", {})
+                if not usage:
+                    # Fallback to response_metadata if needed
+                    usage = response.response_metadata.get("token_usage", {})
+                
                 await usage_service.log_usage(
                     query_type="draft_polish",
                     model="gemini-2.0-flash",
-                    input_tokens=usage.get("prompt_token_count", 0),
-                    output_tokens=usage.get("candidates_token_count", 0)
+                    input_tokens=usage.get("input_tokens", usage.get("prompt_token_count", 0)),
+                    output_tokens=usage.get("output_tokens", usage.get("candidates_token_count", 0))
                 )
-            except: pass
+            except Exception as e:
+                print(f"⚠️ Polish usage logging failed: {e}")
 
             return response.content.strip()
         except Exception as e:

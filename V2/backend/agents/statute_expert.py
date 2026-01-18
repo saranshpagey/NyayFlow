@@ -95,11 +95,23 @@ Respond ONLY with valid JSON.
                     }
                 else:
                     widget_type = "statute"
+                    # Try to extract cross-reference if mentioned in text
+                    cross_ref = ""
+                    if statute_data.get("cross_references"):
+                        cross_ref = statute_data.get("cross_references")[0]
+                    elif "BNS" in statute_data.get("full_explanation", "") or "IPC" in statute_data.get("full_explanation", ""):
+                         # Heuristic: try to find section mentions
+                         match = re.search(r'(?:BNS|IPC)\s+(?:Section|Sec\.?|§)?\s*(\d+[A-Z]?)', statute_data.get("full_explanation", ""), re.I)
+                         if match:
+                             cross_ref = match.group(0)
+
                     widget_data = {
                         "title": statute_data.get("title"),
+                        "section": re.search(r'Section\s*(\d+[A-Z]?)', statute_data.get("title", ""), re.I).group(1) if re.search(r'Section\s*(\d+[A-Z]?)', statute_data.get("title", ""), re.I) else "",
                         "text": statute_data.get("legal_text_snippet", ""),
                         "explanation": statute_data.get("simplified_meaning", ""),
-                        "penalty": statute_data.get("consequences", {}).get("penalty", "")
+                        "penalty": statute_data.get("consequences", {}).get("penalty", ""),
+                        "cross_reference": cross_ref
                     }
                 
                 return {

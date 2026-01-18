@@ -19,19 +19,19 @@ export const NameRiskWidget: React.FC<NameRiskWidgetProps> = ({ data }) => {
     const riskConfigs = {
         green: {
             color: 'text-emerald-600 dark:text-emerald-400',
-            stroke: '#10b981',
+            stroke: 'var(--emerald-500)',
             icon: ShieldCheck,
             label: 'Strong Availability'
         },
         yellow: {
             color: 'text-amber-600 dark:text-amber-400',
-            stroke: '#f59e0b',
+            stroke: 'var(--amber-500)',
             icon: InfoCircle,
             label: 'Moderate Conflict Risk'
         },
         red: {
             color: 'text-rose-600 dark:text-rose-400',
-            stroke: '#f43f5e',
+            stroke: 'var(--rose-500)',
             icon: ShieldAlert,
             label: 'High Conflict Risk'
         }
@@ -51,7 +51,7 @@ export const NameRiskWidget: React.FC<NameRiskWidgetProps> = ({ data }) => {
                 </div>
                 <div>
                     <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">Business Name Risk Gauge</h3>
-                    <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tight">Checking: "{name}"</p>
+                    <p className="text-xxs text-zinc-500 uppercase font-bold tracking-tight">Checking: "{name}"</p>
                 </div>
             </div>
 
@@ -85,7 +85,7 @@ export const NameRiskWidget: React.FC<NameRiskWidgetProps> = ({ data }) => {
                         </svg>
                         <div className="absolute flex flex-col items-center">
                             <span className={cn("text-4xl font-display font-medium", config.color)}>{risk_score}%</span>
-                            <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Risk Score</span>
+                            <span className="text-xxs text-zinc-400 font-bold uppercase tracking-wider">Risk Score</span>
                         </div>
                     </div>
                 </div>
@@ -93,7 +93,7 @@ export const NameRiskWidget: React.FC<NameRiskWidgetProps> = ({ data }) => {
                 <div className="space-y-4">
                     <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 relative overflow-hidden">
                         <div className={cn("absolute left-0 top-0 bottom-0 w-1", risk_level === 'green' ? 'bg-emerald-500' : risk_level === 'yellow' ? 'bg-amber-500' : 'bg-rose-500')} />
-                        <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                        <h4 className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                             <ShieldCheck className="w-3 h-3" /> Professional Advisory
                         </h4>
                         <p className="text-sm text-zinc-700 dark:text-zinc-300 font-medium leading-normal">
@@ -103,7 +103,7 @@ export const NameRiskWidget: React.FC<NameRiskWidgetProps> = ({ data }) => {
 
                     {conflicts.length > 0 && (
                         <div>
-                            <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                            <h4 className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
                                 <Search className="w-3 h-3" /> Potential Conflicts Identified
                             </h4>
                             <div className="flex flex-wrap gap-2">

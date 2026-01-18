@@ -75,7 +75,7 @@ export const AgentStatusWidget: React.FC<AgentStatusWidgetProps> = ({ data, vari
                                 <div className="min-w-0">
                                     <h5 className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">{agent.name}</h5>
                                     {agent.message && (
-                                        <p className="text-[10px] text-zinc-500 dark:text-zinc-500 truncate leading-none mt-0.5">{agent.message}</p>
+                                        <p className="text-xxs text-zinc-500 dark:text-zinc-500 truncate leading-none mt-0.5">{agent.message}</p>
                                     )}
                                 </div>
                             </div>
@@ -167,10 +167,10 @@ export const AgentStatusWidget: React.FC<AgentStatusWidgetProps> = ({ data, vari
                                         ) : agent.status === 'success' ? (
                                             <div className="flex items-center gap-2 pl-3 py-1 border-l border-zinc-200 dark:border-zinc-800">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                                <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-500 uppercase tracking-wider">Ready</span>
+                                                <span className="text-xxs font-medium text-emerald-600 dark:text-emerald-500 uppercase tracking-wider">Ready</span>
                                             </div>
                                         ) : (
-                                            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">Idle</span>
+                                            <span className="text-xxs font-medium text-zinc-400 uppercase tracking-wider">Idle</span>
                                         )}
                                     </div>
                                 </div>

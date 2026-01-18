@@ -28,19 +28,10 @@ class CaseAnalyzerAgent:
         # 1. First, search for relevant precedents using the shared RAG engine
         # We increase match_count to 8 for trend analysis
         search_query = f"Complete judgments and outcomes for: {query}"
-        rag_results = await self.rag_engine.analyze_query(search_query, history, match_count=8, persona=persona)
+        rag_context, retrieved_sources = await self.rag_engine.get_retrieved_context(search_query, history, match_count=8, persona=persona)
         
         # Aggregate multiple precedents for deep analysis
-        rag_context = ""
-        case_titles = []
-        if rag_results and len(rag_results) > 0:
-            # rag_results[0]['content'] contains the concatenated context if using my new rag_engine logic
-            # OR if it's multiple results, we should handle them
-            rag_context = rag_results[0].get("content", "")
-            
-            # Extract case titles from metadata if available
-            for res in rag_results[0].get("entities", []):
-                case_titles.append(res.get("title", "Unknown Case"))
+        case_titles = [res.get("title", "Unknown Case") for res in retrieved_sources if res.get("title")]
 
         # 2. Construct the analysis prompt
         analysis_prompt = f"""You are a Senior Legal Analyst specializing in Indian Law Trend Analysis.
@@ -114,21 +105,23 @@ Respond ONLY with valid JSON.
                     }]
                 }
             else:
-                print("⚠️ CaseAnalyzerAgent: Failed to parse JSON response")
-                # Fallback to RAG result if parsing fails
+                # Fallback if parsing fails
+                print("⚠️ CaseAnalyzerAgent: Failed to parse JSON response. Falling back to research results.")
+                results = await self.rag_engine.analyze_query(query, history, persona=persona)
                 return {
                     "success": True,
                     "intent": intent_data,
                     "agent_used": "case_analyzer_fallback",
-                    "results": rag_results
+                    "results": results
                 }
                 
         except Exception as e:
+            # Fallback to standard research on error
             print(f"❌ CaseAnalyzerAgent Error: {e}")
-            # Fallback to RAG
+            results = await self.rag_engine.analyze_query(query, history, persona=persona)
             return {
                 "success": True,
                 "intent": intent_data,
                 "agent_used": "case_analyzer_fallback_error",
-                "results": rag_results
+                "results": results
             }
