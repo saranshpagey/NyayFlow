@@ -92,6 +92,10 @@ It is designed to solve one core problem: **Efficiency**. The average Indian Hig
 *   **Solution**: "Verticalized Experience for Non-Lawyers".
     *   **Toggle Persona**: Switch between "Advocate Mode" (Technical) and "Founder Mode" (Simplified).
     *   **Plain English**: "Bottom Line" summaries that explain *what this means for your business*.
+    *   **Verified Knowledge**: Answers grounded in actual Companies Act & Tax sections, not just LLM training data.
+    *   **Interactive Widgets**:
+        - **StartUp Insight**: Executive summary + Action Plan + RLHF Feedback.
+        - **Name Risk Check**: Instant trademark conflict detection with Nice Class prediction.
     *   **Risk Badging**: Instant Green/Yellow/Red risk indicators for decisions (Safety Layer).
     *   **Guided Drafting**: Friendly questionnaires ("Who is the employee?") instead of complex forms.
     *   **Safety Net**: "Consult Lawyer" triggers when equity or high liability is involved (Criminal/Litigation).
@@ -124,17 +128,18 @@ It is designed to solve one core problem: **Efficiency**. The average Indian Hig
 ## 🚀 Current Implementation Status (January 2026)
 
 ### ✅ Fully Operational
-- Multi-agent orchestration system (Orchestrator + 3 specialized agents)
-- Semantic legal research with RAG pipeline
-- Semantic caching for instant responses
-- 15+ legal document templates
-- Magic Auto-Fill (Entity Extraction from conversations)
-- AI-powered document polishing
-- Data-driven outcome predictions with visual widgets
-- Case file management (CRUD operations)
-- Knowledge base ingestion and monitoring
-- Responsive mobile-first PWA design
-- Premium typography (Overused Grotesk)
+- **Multi-agent Orchestration**: Case Analyzer, Statute Expert, Procedure Guide
+- **Semantic Legal Research**: Citation-grounded answers with "Thinking Process"
+- **Semantic Caching**: Instant responses for frequently asked questions
+- **Data-Backed Founder Mode**: Companies Act & Tax ingestion + StartUp Insight Widget
+- **Startup Toolkit**: Mutual NDA, Co-Founder Agreements, Offer Letters with Auto-Fill
+- **Interactive Risk Tools**: Name Risk Widget with Trademark Class Logic
+- **Smart Document Drafter**: 18+ templates with AI polishing
+- **Magic Auto-Fill**: Entity Extraction from conversations
+- **Data-driven Outcome Predictions**: Statistical win/loss analysis
+- **Case File Management**: Centralized storage
+- **Responsive Design**: Mobile-first experience with new sidebar routing
+- **Safety Boundary Layer**: Proactive lawyer referral for criminal/high-risk queries
 
 ### 🔧 Technical Highlights
 - **LLM**: Google Gemini 2.0 Flash (1M context window)

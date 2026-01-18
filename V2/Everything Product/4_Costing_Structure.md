@@ -58,6 +58,44 @@ This is our primary COGS (Cost of Goods Sold).
 
 ---
 
+---
+
+## 🔬 II. Per-Query Cost Analysis (Standard Gemini 2.0 Flash)
+
+| Stage | Token Est (In/Out) | Cost (USD) | Cost (INR) | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| **Embedding** | N/A | $0.000005 | ₹0.0004 | Constant cost |
+| **Orchestrator** | 500 / 50 | $0.00007 | ₹0.006 | Can be skipped via Heuristics |
+| **Refinement** | 200 / 20 | $0.00003 | ₹0.002 | Optional for short queries |
+| **Main Gen** | 4,000 / 600 | $0.00064 | ₹0.053 | High impact (RAG Context) |
+| **TOTAL** | **~5.5k tokens** | **$0.000745** | **₹0.062** | **~16 queries per ₹1** |
+
+---
+
+## 📉 III. Cost Reduction Roadmap (Technical)
+
+### 1. Architectural: RAG Decoupling (High Impact)
+*   **Current Issue**: `CaseAnalyzer` calls RAG, which generates a 600-word answer. Analyzer then generates its *own* 800-word answer. Both are paid for.
+*   **Fix**: Introduce `retrieve_only` in `rag_engine`. Let internal agents get raw text only.
+*   **Est Saving**: -$0.00024 per analysis query (~30% reduction).
+
+### 2. Logic: Heuristic Expansion (Medium Impact)
+*   **Current Issue**: Even simple queries sometimes trip the Router LLM.
+*   **Fix**: Expand regex in `orchestrator.py` to catch 80% of intents (Checklist, Glossary, Filing).
+*   **Est Saving**: -$0.00007 per simple query.
+
+### 3. Context: Dynamic Pruning (Low/Medium Impact)
+*   **Current Issue**: Passing 5 long legal documents to Gemini even if only 2 are relevant.
+*   **Fix**: Rank chunks by similarity and only pass those above a strict `0.75` threshold, or cap tokens at 3k for non-premium users.
+*   **Est Saving**: -$0.0001 per query.
+
+### 4. Cache: Persistent Semantic Caching
+*   **Current Issue**: Double-paying for the same "What is Section 420" query by different users.
+*   **Fix**: Use Supabase `match_cache` with a slightly lower threshold (0.95) to catch similar phrasings.
+*   **Est Saving**: -100% cost for 15% of traffic.
+
+---
+
 ## 🚀 Scaling Triggers (When to upgrade?)
 
 1.  **Database**: Upgrade to Supabase Pro ($25) immediately upon launch to get daily backups and 8GB storage.
