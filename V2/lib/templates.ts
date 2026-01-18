@@ -649,56 +649,52 @@ _______________________                             _______________________
     },
     // --- STARTUP TEMPLATE PACK ---
     {
-        id: 'startup-nda',
-        name: 'Non-Disclosure Agreement (NDA)',
+        id: 'startup-mutual-nda',
+        name: 'Mutual Non-Disclosure Agreement (M-NDA)',
         category: 'startup',
-        description: 'Protect confidential business information.',
+        description: 'Protect confidential information shared by BOTH parties.',
         fields: [
-            { id: 'disclosingParty', label: 'Disclosing Party (Company)', type: 'text', placeholder: 'Your Company Name', required: true },
-            { id: 'receivingParty', label: 'Receiving Party (Recipient)', type: 'text', placeholder: 'Recipient Name', required: true },
-            { id: 'purpose', label: 'Purpose of Disclosure', type: 'text', placeholder: 'e.g., Evaluating a potential partnership', required: true },
-            { id: 'date', label: 'Date', type: 'date', placeholder: '', required: true },
-            { id: 'place', label: 'Place', type: 'text', placeholder: 'e.g., Bengaluru', required: true },
+            { id: 'party1', label: 'Party 1 (The Company)', type: 'text', placeholder: 'Your Company Name', required: true },
+            { id: 'party2', label: 'Party 2 (Individual/Vendor)', type: 'text', placeholder: 'Recipient Name', required: true },
+            { id: 'purpose', label: 'Purpose of Discussion', type: 'text', placeholder: 'e.g., Evaluating a potential business relationship', required: true },
+            { id: 'date', label: 'Effective Date', type: 'date', placeholder: '', required: true },
+            { id: 'place', label: 'Place of Execution', type: 'text', placeholder: 'e.g., New Delhi', required: true },
         ],
-        content: `NON-DISCLOSURE AGREEMENT
+        content: `MUTUAL NON-DISCLOSURE AGREEMENT
+        
+This Mutual Non-Disclosure Agreement ("Agreement") is entered into on {{date}} at {{place}}, by and between:
 
-This Non-Disclosure Agreement ("Agreement") is entered into on {{date}} at {{place}}, by and between:
-
-{{disclosingParty}}, having its office at {{place}} ("Disclosing Party")
+{{party1}}, a company incorporated under the Companies Act, 2013, having its office at [Address] ("First Party")
 
 AND
 
-{{receivingParty}}, resident/having office at [Address] ("Receiving Party").
+{{party2}}, resident/having office at [Address] ("Second Party").
 
 1. PURPOSE
-The Disclosing Party intends to share certain confidential information with the Receiving Party for the purpose of {{purpose}} ("Purpose").
+Both parties wish to disclose certain confidential information to each other for the purpose of {{purpose}} ("Purpose").
 
 2. CONFIDENTIAL INFORMATION
-"Confidential Information" means all non-public information, technical data, trade secrets, know-how, software, and business plans disclosed by the Disclosing Party.
+"Confidential Information" means any non-public information disclosed by either party, including business plans, technical data, trade secrets, and customer lists.
 
-3. OBLIGATIONS
-The Receiving Party agrees to:
-(a) Maintain the confidentiality of the Information;
-(b) Use the Information ONLY for the Purpose;
-(c) Not disclose the Information to any third party without prior written consent.
+3. MUTUAL CONFIDENTIALITY OBLIGATIONS
+Each party agrees:
+(a) To hold the other party's Confidential Information in strict confidence;
+(b) To use such Information ONLY for the {{purpose}};
+(c) Not to disclose such Information to any third party without prior written consent.
 
 4. EXCLUSIONS
-Obligations do not apply to information that is public, already known to Receiving Party, or independently developed.
+Confidentiality does not apply to info that is (i) public, (ii) already known, or (iii) independently developed.
 
-5. TERM
-This Agreement shall remain in effect for a period of 2 years from the date of disclosure.
+5. REMEDIES
+Both parties acknowledge that unauthorized disclosure may cause irreparable harm for which monetary damages may be inadequate.
 
 6. GOVERNING LAW
-This Agreement shall be governed by the laws of India. Courts at {{place}} shall have jurisdiction.
+This Agreement is governed by Indian law. Courts at {{place}} shall have exclusive jurisdiction.
 
 Signed by:
 
-______________________
-For {{disclosingParty}}
-
-
-______________________
-For {{receivingParty}}`
+______________________          ______________________
+For {{party1}}                  For {{party2}}`
     },
     {
         id: 'startup-founder-agreement',
@@ -795,6 +791,51 @@ HR / Authorized Signatory
 {{companyName}}
 
 Accepted: ______________________ ({{candidateName}})`
+    },
+    {
+        id: 'startup-consultant-agreement',
+        name: 'Consultant Agreement',
+        category: 'startup',
+        description: 'Agreement for external consultants or freelancers.',
+        fields: [
+            { id: 'companyName', label: 'Company Name', type: 'text', placeholder: 'Company Name', required: true },
+            { id: 'consultantName', label: 'Consultant Name', type: 'text', placeholder: 'Name of Consultant', required: true },
+            { id: 'scopeOfWork', label: 'Scope of Work', type: 'textarea', placeholder: 'Describe the specific deliverables...', required: true },
+            { id: 'fees', label: 'Consultancy Fees', type: 'text', placeholder: 'e.g., ₹50,000 per month', required: true },
+            { id: 'term', label: 'Term (Months/Weeks)', type: 'text', placeholder: 'e.g., 6 months', required: true },
+        ],
+        content: `CONSULTANCY AGREEMENT
+
+This Consultancy Agreement ("Agreement") is entered into on [Date] by and between:
+
+{{companyName}}, a company incorporated under the laws of India ("Company")
+
+AND
+
+{{consultantName}}, a consultant/independent contractor ("Consultant").
+
+1. ENGAGEMENT
+The Company hereby engages the Consultant to provide the services described in the Scope of Work.
+
+2. SCOPE OF WORK
+{{scopeOfWork}}
+
+3. FEES AND PAYMENT
+The Company shall pay the Consultant a fee of {{fees}} for the services rendered. Payments shall be made within 15 days of invoice.
+
+4. INDEPENDENT CONTRACTOR
+The Consultant is an independent contractor and not an employee of the Company.
+
+5. INTELLECTUAL PROPERTY
+All work product created by the Consultant for the Company shall be the sole property of the Company.
+
+6. TERM AND TERMINATION
+This Agreement shall be for a term of {{term}}. Either party may terminate with 15 days' notice.
+
+Signatures:
+
+______________________          ______________________
+For {{companyName}}              {{consultantName}}`
     }
 ];
 
@@ -836,6 +877,7 @@ export const getCategories = (): Array<{ value: LegalTemplate['category'], label
         { value: 'notice', label: 'Legal Notices' },
         { value: 'petition', label: 'Petitions' },
         { value: 'affidavit', label: 'Affidavits' },
-        { value: 'contract', label: 'Contracts' }
+        { value: 'contract', label: 'Contracts' },
+        { value: 'startup', label: 'Startup Pack' }
     ];
 };
